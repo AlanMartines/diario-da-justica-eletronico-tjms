@@ -1,2 +1,1 @@
-# diario-da-justica-eletronico-tjms
-Diário da Justiça Eletrônico
+# Diário da Justiça Eletrônico - TJMS
