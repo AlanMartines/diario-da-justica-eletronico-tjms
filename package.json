@@ -1,0 +1,25 @@
+{
+  "name": "diario-da-justica-eletronico-tjms",
+  "version": "1.0.0",
+  "description": "Diário da Justiça Eletrônico",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git"
+  },
+  "keywords": [
+    "Diário",
+    "da",
+    "Justiça",
+    "Eletrônico"
+  ],
+  "author": "Alan Martines",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms/issues"
+  },
+  "homepage": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms#readme"
+}
