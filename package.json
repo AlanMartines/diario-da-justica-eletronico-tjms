@@ -1,7 +1,7 @@
 {
   "name": "diario-da-justica-eletronico-tjms",
   "version": "1.0.0",
-  "description": "Diário da Justiça Eletrônico",
+  "description": "Diário da Justiça Eletrônico - TJMS",
   "main": "index.js",
   "private": true,
   "scripts": {
