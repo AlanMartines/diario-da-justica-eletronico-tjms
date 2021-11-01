@@ -4,20 +4,14 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', 'disable-setuid-sandbox', '--use-gl=egl']
   });
+  //
   const page = await browser.newPage();
   await page.setViewport({
     width: 1366,
     height: 768,
     deviceScaleFactor: 1,
   });
-
-  let postData = {
-    'dadosConsulta.dtInicio': '02/11/2020',
-    'dadosConsulta.dtFim': '03/11/2021',
-    'dadosConsulta.cdCaderno': '-11',
-    'dadosConsulta.pesquisaLivre': '"Alex Aparecido Pereira Martines"'
-  };
-
+  //
   await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do');
   await page.screenshot({
     path: 'example.png'
