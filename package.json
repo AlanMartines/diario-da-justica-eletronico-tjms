@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "Diário da Justiça Eletrônico",
   "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "echo \"Erro: nenhum teste especificado\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git"
+    "url": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git"
   },
   "keywords": [
     "Diário",
@@ -16,10 +18,16 @@
     "Justiça",
     "Eletrônico"
   ],
-  "author": "Alan Martines",
+  "author": "Alan Martines <alancpmartines@hotmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms/issues"
   },
-  "homepage": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms#readme"
+  "homepage": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms#readme",
+  "dependencies": {
+    "puppeteer": "^10.4.0",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.9.0",
+    "yoo-hoo": "^1.3.1"
+  }
 }
