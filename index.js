@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 //
-let scrape = async () => {
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setViewport({
@@ -21,8 +21,4 @@ let scrape = async () => {
     path: 'example.png'
   });
   await browser.close();
-};
-//
-scrape().then((value) => {
-  console.log(value);
-});
+})();
