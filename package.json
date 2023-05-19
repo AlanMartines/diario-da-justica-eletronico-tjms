@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms#readme",
   "dependencies": {
-    "puppeteer": "^10.4.0",
-    "puppeteer-extra": "^3.2.3",
-    "puppeteer-extra-plugin-stealth": "^2.9.0",
+    "puppeteer": "^20.2.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "yoo-hoo": "^1.3.1"
   }
 }
