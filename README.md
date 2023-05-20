@@ -2,7 +2,7 @@
 
 Este projeto usa como base o [Puppeteer](https://github.com/puppeteer/puppeteer "Puppeteer"), um navegador virtual sem interface gráfica que abre o site do [Diário da Justiça Eletrônico - TJMS](https://esaj.tjms.jus.br/cdje/consultaAvancada.do#buscaavancada "Diário da Justiça Eletrônico - TJMS") e executa todos os comandos via código possibilitando assim a automação de todas as funções.
 
-![](https://img.shields.io/github/stars/AlanMartines/mywhatsapp-api-node-wppconnect.svg) ![](https://img.shields.io/github/tag/AlanMartines/mywhatsapp-api-node-wppconnect.svg) ![](https://img.shields.io/github/v/release/AlanMartines/mywhatsapp-api-node-wppconnect.svg) ![](https://img.shields.io/github/issues/AlanMartines/mywhatsapp-api-node-wppconnect.svg) ![](https://img.shields.io/badge/express-v4.17.2-green.svg) ![](https://img.shields.io/badge/node-v14.0-green.svg) ![](https://img.shields.io/badge/npm-v8.3.2-green.svg) ![](https://img.shields.io/github/license/AlanMartines/mywhatsapp-api-node-wppconnect) ![](https://img.shields.io/github/downloads/AlanMartines/mywhatsapp-api-node-wppconnect/total) ![](https://img.shields.io/github/forks/AlanMartines/mywhatsapp-api-node-wppconnect)
+![](https://img.shields.io/github/stars/AlanMartines/diario-da-justica-eletronico-tjms.svg) ![](https://img.shields.io/github/tag/AlanMartines/diario-da-justica-eletronico-tjms.svg) ![](https://img.shields.io/github/v/release/AlanMartines/diario-da-justica-eletronico-tjms.svg) ![](https://img.shields.io/github/issues/AlanMartines/diario-da-justica-eletronico-tjms.svg) ![](https://img.shields.io/badge/express-v4.17.2-green.svg) ![](https://img.shields.io/badge/node-v14.0-green.svg) ![](https://img.shields.io/badge/npm-v8.3.2-green.svg) ![](https://img.shields.io/github/license/AlanMartines/diario-da-justica-eletronico-tjms) ![](https://img.shields.io/github/downloads/AlanMartines/diario-da-justica-eletronico-tjms/total) ![](https://img.shields.io/github/forks/AlanMartines/diario-da-justica-eletronico-tjms)
 
 ## Nota
 
@@ -210,7 +210,7 @@ SECRET_KEY=
 cd ~
 
 # Clone este repositório
-git clone https://github.com/AlanMartines/mywhatsapp-api-node-wppconnect.git ApiTJMS
+git clone https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git ApiTJMS
 
 # Acesse a pasta do projeto no terminal/cmd
 cd ApiTJMS
