@@ -9,9 +9,10 @@ const config = require("../config.global");
 async function downloadPdfAndConvertToBase64(url) {
 	try {
 		const response = await axios.get(url, { responseType: 'arraybuffer' });
-		const data = Buffer.from(response.data, 'binary');
-		const base64Data = data.toString('base64');
-    const fileInfo = fileType(data);
+		const buffer = Buffer.from(response.data, 'binary');
+		const base64Data = buffer.toString('base64');
+    const fileInfo = await fileType.fromBuffer(buffer)
+		console.log(fileInfo);
     const mimeType = fileInfo?.mime || 'application/pdf';
 		// Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
