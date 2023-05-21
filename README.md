@@ -247,7 +247,113 @@ pm2 unstartup systemd
 # Pronto, escaneie o código QR-Code do Whatsapp e aproveite!
 ```
 
-## Rotas
+## Rota - Caderno unificado
+
+#### Json (POST)
+```json
+{
+	"dtInicio": "01/01/2019",
+	"nEdicao": 5179
+}
+```
+
+## Rota - Consulta dos cadernos
+
+#### Json (POST)
+
+```json
+{
+	"dtInicio": "01/01/2019",
+	"nEdicao": 5179,
+	"cdCaderno": 0,
+	"vEdicao": 0
+}
+```
+
+###### Cadernos
+
+<blockquote>
+<p>
+0 - Caderno 1 - Administrativo
+</p>
+<p>
+1 - Caderno 2 - Judicial - 2ª Instância
+</p>
+<p>
+2 - Caderno 3 - Judicial - 1ª Instância
+</p>
+<p>
+3 - Caderno 4 - Editais
+</p>
+</blockquote>
+
+###### Seção
+
+<blockquote>
+<p>
+0 - TRIBUNAL DE JUSTIÇA
+</p>
+<p>
+1 - Presidência
+</p>
+<p>
+2 - Secretaria da Magistratura
+</p>
+<p>
+3 - Secretaria de Gestão de Pessoas
+</p>
+<p>
+4 - Escola Judicial do Estado de Mato Grosso do Sul
+</p>
+<p>
+5 - Corregedoria-Geral da Justiça
+</p>
+<p>
+6 - Secretaria da Corregedoria-Geral da Justiça
+</p>
+<p>
+7 - Secretaria de Bens e Serviços
+</p>
+<p>
+8 - Departamento de Compras, Licitações e Contratos
+</p>
+<p>
+9 - Extrajudicial
+</p>
+</blockquote>
+
+## Rota - Download dos cadernos
+
+#### Json (POST)
+
+```json
+{
+	"dtInicio": "01/01/2019",
+	"cdCaderno": "-1",
+}
+```
+
+###### Cadernos
+
+<blockquote>
+<p>
+-1 - Cadernos unificados
+</p>
+<p>
+1 - Caderno 1 - Administrativo
+</p>
+<p>
+2 - Caderno 2 - Judicial - 2ª Instância
+</p>
+<p>
+3 - Caderno 3 - Judicial - 1ª Instância
+</p>
+<p>
+4 - Caderno 4 - Editais
+</p>
+</blockquote>
+
+## Rota - Pesquisa avançada
 
 #### Json (POST)
 
@@ -263,7 +369,9 @@ pm2 unstartup systemd
 ###### Cadernos
 
 <blockquote>
+<p>
 -11 - Pesquisar em todos os cadernos
+</p>
 <p>
 1 - Caderno 1 - Administrativo
 </p>
@@ -311,6 +419,68 @@ Exemplo: &quot;mandado de seguran&ccedil;a&quot;
 </p>
 </blockquote>
 
+#### Caderno unificado (POST method)
+###### Visualiza o caderno unificado das edições do Diário da Justiça Eletrônico.
+
+```js
+await fetch("http://localhost:8009/instance/downloadCaderno", {
+  method: "POST",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+		"dtInicio": "01/01/2019",
+		"nEdicao": 5179
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => console.log(data))
+  .catch((error) => console.error(error));
+```
+
+#### Consulta dos cadernos (POST method)
+###### Consulta aos cadernos das edições do Diário da Justiça Eletrônico.
+
+```js
+await fetch("http://localhost:8009/instance/consultaSimples", {
+  method: "POST",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+		"dtInicio": "01/01/2019",
+		"nEdicao": 5179,
+		"cdCaderno": 0,
+		"vEdicao": 0
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => console.log(data))
+  .catch((error) => console.error(error));
+```
+
+#### Download dos cadernos (POST method)
+###### Download dos cadernos do Diário da Justiça Eletrônico na íntegra. Opção disponível de segunda a sexta-feira, das 00:01 às 23:59 horas; sábado, domingo e nos dias em que, mediante divulgação, não houver expediente ficará disponível 24 horas.
+
+```js
+await fetch("http://localhost:8009/instance/downloadCaderno", {
+  method: "POST",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+		"dtInicio": "01/01/2019",
+		"cdCaderno": "-1",
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => console.log(data))
+  .catch((error) => console.error(error));
+```
+
 #### Pesquisa avançada (POST method)
 ###### Consulta avançada aos cadernos das edições do Diário da Justiça Eletrônico.
 
@@ -332,7 +502,6 @@ await fetch("http://localhost:8009/instance/searchAdvanced", {
   .then((data) => console.log(data))
   .catch((error) => console.error(error));
 ```
-
 
 ## Reflexão
 
