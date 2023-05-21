@@ -13,7 +13,7 @@ router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next)
 	//
 	try {
 		//
-		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado || !req?.body?.View ) {
+		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado) {
 			var resultRes = {
 				"erro": true,
 				"status": 400,
