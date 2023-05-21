@@ -18,9 +18,15 @@ async function downloadPdfAndConvertToBase64(url, view, res) {
 		//
 		if (view || view == 'true') {
 			const pdfContent = Buffer.from(base64Data, 'base64');
-
-			res.type('Content-Type', 'application/pdf');
-			res.send(pdfContent);
+			//
+			res.writeHead(200, {
+				'Content-Type': 'application/pdf',
+				'Content-Length': pdfContent.length
+			});
+			//
+			res.status(200);
+			return res.end(pdfContent);
+			//
 		} else {
 			return {
 				"erro": false,
