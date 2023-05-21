@@ -12,7 +12,7 @@ async function downloadPdfAndConvertToBase64(url) {
 		const data = Buffer.from(response.data, 'binary');
 		const base64Data = data.toString('base64');
     const fileInfo = fileType(data);
-    const mimeType = fileInfo.mime;
+    const mimeType = fileInfo?.mime;
 		// Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
 		//
