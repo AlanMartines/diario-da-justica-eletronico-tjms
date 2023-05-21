@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { logger } = require("../utils/logger");
 //
 exports.nuDiarioCadUnificado = async (req, res, next) => {
 		//
