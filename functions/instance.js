@@ -14,7 +14,15 @@ async function downloadPdfAndConvertToBase64(url) {
     const pdfData = Buffer.from(response.data, 'binary').toString('base64');
     // Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
     logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
-		return pdfData;
+			//
+			logger?.error(`- Ocorreu um erro ao baixar o PDF: ${error.message}`);
+			return {
+				"erro":  false,
+				"status": 200,
+				"message": 'PDF baixado e convertido para base64 com sucesso',
+				"data": pdfData
+			};
+			//
   } catch (error) {
 			//
 			logger?.error(`- Ocorreu um erro ao baixar o PDF: ${error.message}`);
@@ -64,7 +72,7 @@ module.exports = class Instance {
 	static async cadUnificado(dtInicio, nuDiarioCadUnificado) {
 		let url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
 		try {
-
+				return await downloadPdfAndConvertToBase64(url);
 		} catch (error) {
 			//
 			logger?.error(`- Erro, ${error.message}`);
