@@ -18,7 +18,7 @@ exports.nuDiarioCadUnificado = async (req, res, next) => {
 		} 
 		//
 	try {
-		const response = await axios.get(`https://esaj.tjms.jus.br/cdje/getDtPublicacao.do?nuDiario=${nuDiario}&dtDiario=${dtDiario}`);
+		const response = await axios.get(`https://esaj.tjms.jus.br/cdje/getDtPublicacao.do?nuDiario=${req?.body?.dtDiario}&dtDiario=${req?.body?.nuDiarioCadUnificado}`);
 		//
 		if (!response?.status === 200) {
 			//
