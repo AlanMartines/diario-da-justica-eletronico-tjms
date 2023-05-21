@@ -260,6 +260,34 @@ pm2 unstartup systemd
 }
 ```
 
+###### Palavras-chave
+<blockquote>
+<b>E</b><br />
+Busca todas as palavras desejadas. Quando nenhum <br /> 
+operador &eacute; indicado, o &ldquo;E&rdquo; &eacute; utilizado por padr&atilde;o. <br /> 
+Exemplo: furto E carro E estacionamento
+<p></p>
+<b>OU</b> <br />
+Busca alguma(s) ou todas as palavras desejadas. 
+<br>Exemplo: bicicleta OU carro OU motocicleta
+<p></p>
+<b>N&Atilde;O</b><br/>
+Busca uma palavra e n&atilde;o outra.<br>
+Exemplo: corrup&ccedil;&atilde;o N&Atilde;O passiva
+<p></p>
+<b>?</b><br />
+Busca palavras com um caractere qualquer substituindo o ?.<br>
+Exemplo: vici? - vici<strong>o</strong>, vici<strong>a</strong>, vici<strong>e</strong>
+<p></p>
+<b>*</b><br>
+Busca palavras com um conjunto qualquer <br>de caracteres substituindo o *.<br>
+Exemplo: vici* - vici<b>ado</b>, vici<b>ada</b>, vici<b>oso</b>
+<p></p>
+<b>&quot; &quot;</b><br>
+Busca uma frase completa que esteja entre as aspas.<br> 
+Exemplo: &quot;mandado de seguran&ccedil;a&quot;
+</blockquote>
+
 #### Pesquisa avançada (POST method)
 
 ```js
