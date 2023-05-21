@@ -1,6 +1,7 @@
 //
 const axios = require('axios');
 const fs = require('fs-extra');
+const fileType = require('file-type');
 const browserObject = require('../browser');
 const { logger } = require("../utils/logger");
 const config = require("../config.global");
