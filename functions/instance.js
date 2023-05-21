@@ -29,7 +29,7 @@ async function downloadPdfAndConvertToBase64(url) {
 				"erro": true,
 				"status": 401,
 				"message": 'Ocorreu um erro ao baixar o PDF',
-				"search": error?.message
+				"search": null
 			};
 			//
   }
