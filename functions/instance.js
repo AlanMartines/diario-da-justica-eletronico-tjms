@@ -11,7 +11,7 @@ async function downloadPdfAndConvertToBase64(url) {
     const response = await axios.get(url, { responseType: 'arraybuffer' });
     const data = Buffer.from(response.data, 'binary');
     const mimeType = mime.contentType('pdf');
-
+		//
     // Verificar se o tipo MIME é PDF antes de prosseguir
     if (mimeType !== 'application/pdf') {
       throw new Error('O arquivo não é um PDF válido.');
