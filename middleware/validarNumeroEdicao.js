@@ -18,6 +18,7 @@ exports.nuDiarioCadUnificado = async (req, res, next) => {
 		} 
 		//
 	try {
+		//
 		let nuDiario = req?.body?.nuDiario;
 		let dtDiario = req?.body?.dtDiario;
 		//
