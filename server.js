@@ -25,7 +25,7 @@ const {
 	yo
 } = require('yoo-hoo');
 //
-yo('Diário da Justiça Eletrônico', {
+yo('TJMS', {
 	color: 'rainbow',
 	spacing: 1,
 });

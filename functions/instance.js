@@ -1,6 +1,7 @@
 //
 const browserObject = require('../browser');
 const { logger } = require("../utils/logger");
+const config = require("../config.global");
 async function obterValorDaTabela(page) {
 	//
 	if (page) {

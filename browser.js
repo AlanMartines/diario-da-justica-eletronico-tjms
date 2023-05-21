@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const { logger } = require("./utils/logger");
+const config = require("./config.global");
 //
 async function startBrowser() {
 	let browser;
@@ -52,7 +53,8 @@ async function startBrowser() {
 				'--disable-gpu'
 			],
 			ignoreHTTPSErrors: true,
-			timeout: 0
+			timeout: 0,
+			executablePath: config.CHROME_BIN || undefined
 		});
 		//
 	} catch (err) {

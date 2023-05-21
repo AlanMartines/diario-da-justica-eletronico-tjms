@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 const instance = require("../functions/instance");
 const { logger } = require("../utils/logger");
-const browserObject = require('../browser');
+const config = require("../config.global");
 //
 router.post("/searchAdvanced", async (req, res, next) => {
 	//
