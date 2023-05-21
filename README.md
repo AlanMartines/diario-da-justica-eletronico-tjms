@@ -201,6 +201,9 @@ DOMAIN_SSL=
 # Chave de segurança para validação
 SECRET_KEY=
 #
+# Caminho para o binário do Chrome a ser utilizado durante a execução 
+CHROME_BIN=
+#
 ```
 
 ## Rodando a aplicação
