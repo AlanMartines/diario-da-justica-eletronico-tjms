@@ -242,7 +242,7 @@ pm2 startup
 # Para remover do init script
 pm2 unstartup systemd
 
-# O servidor iniciará na porta:9001
+# O servidor iniciará na porta 8009
 
 # Pronto, escaneie o código QR-Code do Whatsapp e aproveite!
 ```
