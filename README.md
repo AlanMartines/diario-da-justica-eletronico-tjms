@@ -204,6 +204,9 @@ SECRET_KEY=
 # Caminho para o binário do Chrome a ser utilizado durante a execução 
 CHROME_BIN=
 #
+# Url WebSocket para se comunicar com navegador
+WSENDPOINT=
+#
 ```
 
 ## Rodando a aplicação
