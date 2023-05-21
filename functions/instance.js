@@ -1,6 +1,7 @@
 //
 const axios = require('axios');
 const fs = require('fs-extra');
+const fileType = require('file-type');
 const browserObject = require('../browser');
 const { logger } = require("../utils/logger");
 const config = require("../config.global");
@@ -11,11 +12,19 @@ async function downloadPdfAndConvertToBase64(url) {
       responseType: 'arraybuffer'
     });
 		//
-    const data = Buffer.from(response.data, 'binary').toString('base64');
-    const mimeType = response.headers['content-type'];
-    // Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
+    const data = Buffer.from(response.data, 'binary');
+    const fileInfo = fileType(data);
+    const mimeType = fileInfo.mime;
+
+    // Verificar se o tipo MIME é PDF antes de prosseguir
+    if (mimeType !== 'application/pdf') {
+      throw new Error('O arquivo não é um PDF válido.');
+    }
+
+    const base64Data = data.toString('base64');
     logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
-		return { data, mimeType };
+		// Retornar o Base64 e o tipo MIME
+    return { data: base64Data, mimeType };
   } catch (error) {
 			//
 			logger?.error(`- Ocorreu um erro ao baixar o PDF: ${error.message}`);
