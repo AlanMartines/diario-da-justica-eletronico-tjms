@@ -16,25 +16,12 @@ async function downloadPdfAndConvertToBase64(url, view, res) {
 		// Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
 		//
-		if (view || view == 'true') {
-			const pdfContent = Buffer.from(base64Data.replace('data:image/png;base64,', ''), 'base64');
-			//
-			res.writeHead(200, {
-				'Content-Type': 'application/pdf',
-				'Content-Length': pdfContent.length
-			});
-			//
-			res.status(200);
-			return res.end(pdfContent);
-			//
-		} else {
 			return {
 				"erro": false,
 				"status": 200,
 				"message": 'PDF baixado e convertido para base64 com sucesso',
 				"result": { data: base64Data, mimetype: mimeType }
 			};
-		}
 		//
 	} catch (error) {
 		//

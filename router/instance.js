@@ -27,7 +27,7 @@ router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next)
 			//
 		} 
 		//
-		let cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.View, res);
+		let cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.nuDiarioCadUnificado);
 		//
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(cadUnificado.status).json({
