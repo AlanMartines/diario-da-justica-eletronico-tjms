@@ -18,7 +18,10 @@ exports.nuDiarioCadUnificado = async (req, res, next) => {
 		} 
 		//
 	try {
-		const response = await axios.get(`https://esaj.tjms.jus.br/cdje/getDtPublicacao.do?nuDiario=${req?.body?.dtDiario}&dtDiario=${req?.body?.nuDiarioCadUnificado}`);
+		let nuDiario = req?.body?.nuDiario;
+		let dtDiario = req?.body?.dtDiario;
+		//
+		const response = await axios.get(`https://esaj.tjms.jus.br/cdje/getDtPublicacao.do?nuDiario=${nuDiario}&dtDiario=${dtDiario}`);
 		//
 		if (!response?.status === 200) {
 			//
