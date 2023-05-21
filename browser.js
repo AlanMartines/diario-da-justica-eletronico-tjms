@@ -54,11 +54,12 @@ async function startBrowser() {
 			],
 			ignoreHTTPSErrors: true,
 			timeout: 0,
-			executablePath: config.CHROME_BIN || undefined
+			executablePath: config?.CHROME_BIN ? `${config?.CHROME_BIN}` : undefined,
+			browserWSEndpoint: config?.WSENDPOINT ? `${config?.WSENDPOINT}` : undefined
 		});
 		//
-	} catch (err) {
-		console.log("Could not create a browser instance => : ", err);
+	} catch (error) {
+		logger?.error(`- Could not create a browser instance: ${error?.message}`);
 	}
 	return browser;
 }
