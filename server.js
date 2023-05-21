@@ -25,7 +25,7 @@ const {
 	yo
 } = require('yoo-hoo');
 //
-yo('TJMS', {
+yo('API-TJMS', {
 	color: 'rainbow',
 	spacing: 1,
 });
