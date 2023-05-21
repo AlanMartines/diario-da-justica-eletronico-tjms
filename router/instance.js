@@ -4,15 +4,16 @@ const express = require("express");
 const router = express.Router();
 const instance = require("../functions/instance");
 const { logger } = require("../utils/logger");
-const config = require("../config.global");
+const verify = require("../middleware/validarNumeroEdicao");
 //
 // ------------------------------------------------------------------------------------------------//
 //
 // Caderno unificado
-router.post("/cadUnificado", async (req, res, next) => {
+router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next) => {
 	//
 	try {
-		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado ) {
+		//
+		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado || !req?.body?.View ) {
 			var resultRes = {
 				"erro": true,
 				"status": 400,
@@ -26,7 +27,7 @@ router.post("/cadUnificado", async (req, res, next) => {
 			//
 		} 
 		//
-		let cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.nuDiarioCadUnificado);
+		let cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.View, res);
 		//
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(cadUnificado.status).json({

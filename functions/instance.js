@@ -6,22 +6,29 @@ const browserObject = require('../browser');
 const { logger } = require("../utils/logger");
 const config = require("../config.global");
 //
-async function downloadPdfAndConvertToBase64(url) {
+async function downloadPdfAndConvertToBase64(url, view, res) {
 	try {
 		const response = await axios.get(url, { responseType: 'arraybuffer' });
 		const buffer = Buffer.from(response.data, 'binary');
 		const base64Data = buffer.toString('base64');
-    const fileInfo = await fileType.fromBuffer(buffer);
-    const mimeType = fileInfo?.mime || 'application/pdf';
+		const fileInfo = await fileType.fromBuffer(buffer);
+		const mimeType = fileInfo?.mime || 'application/pdf';
 		// Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
 		//
-		return {
-			"erro": false,
-			"status": 200,
-			"message": 'PDF baixado e convertido para base64 com sucesso',
-			"result": { data: base64Data, mimetype: mimeType }
-		};
+		if (view || view == 'true') {
+			const pdfContent = Buffer.from(base64Data, 'base64');
+
+			res.setHeader('Content-Type', 'application/pdf');
+			res.send(pdfContent);
+		} else {
+			return {
+				"erro": false,
+				"status": 200,
+				"message": 'PDF baixado e convertido para base64 com sucesso',
+				"result": { data: base64Data, mimetype: mimeType }
+			};
+		}
 		//
 	} catch (error) {
 		//
@@ -69,10 +76,10 @@ async function obterValorDaTabela(page) {
 //
 module.exports = class Instance {
 	//
-	static async cadUnificado(dtInicio, nuDiarioCadUnificado) {
+	static async cadUnificado(dtInicio, nuDiarioCadUnificado, view) {
 		let url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
 		try {
-			return await downloadPdfAndConvertToBase64(url);
+			return await downloadPdfAndConvertToBase64(url, view);
 		} catch (error) {
 			//
 			logger?.error(`- Erro, ${error.message}`);
