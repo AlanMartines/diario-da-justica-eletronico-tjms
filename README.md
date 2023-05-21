@@ -6,7 +6,7 @@ Este projeto usa como base o [Puppeteer](https://github.com/puppeteer/puppeteer 
 
 ## Nota
 
-Esta Api, segue os mesmos termos de serviço do WhatsApp. É importante que você leia atentamente a estes termos. Você é responsável pelo uso da ferramenta e pelas conseqüências do mau uso. Reforçamos que a API não é destinada para prática de SPAM e que o envio de mensagens indesejadas, viola os termos de serviço do WhatsApp. A violação dos termos pode acarretar no bloqueio e banimento definitivo de sua conta no WhatsApp.
+```ATENÇÃO:``` A Lei nº 11.419/06, em seu artigo 4º, §3º, alterou a forma de contagem dos prazos processuais referentes aos atos judiciais e administrativos publicados em Diários Eletrônicos, estabelecendo que se considera como data da publicação o primeiro dia útil seguinte ao da disponibilização da informação no Diário da Justiça eletrônico. Assim, os prazos processuais terão início no primeiro dia útil que seguir ao considerado como data da publicação.
 
 #### Dependências Debian (e.g. Ubuntu) 64bits
 
