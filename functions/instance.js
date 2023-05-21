@@ -8,20 +8,17 @@ const config = require("../config.global");
 //
 async function downloadPdfAndConvertToBase64(url) {
   try {
-    const response = await axios.get(url, {
-      responseType: 'arraybuffer'
-    });
-		//
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
     const data = Buffer.from(response.data, 'binary');
-    const fileInfo = fileType(data);
-    const mimeType = fileInfo.mime;
+    const mimeType = mime.contentType('pdf');
 
     // Verificar se o tipo MIME é PDF antes de prosseguir
     if (mimeType !== 'application/pdf') {
       throw new Error('O arquivo não é um PDF válido.');
     }
-
+		//
     const base64Data = data.toString('base64');
+		//
     logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
 		// Retornar o Base64 e o tipo MIME
     return { data: base64Data, mimeType };
