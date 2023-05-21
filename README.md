@@ -252,8 +252,8 @@ pm2 unstartup systemd
 #### Json (POST)
 ```json
 {
-	"dtDiario": "01/01/2019",
-	"nuDiario": 5179
+  "dtDiario": "01/01/2019",
+  "nuDiario": 5179
 }
 ```
 
@@ -263,10 +263,10 @@ pm2 unstartup systemd
 
 ```json
 {
-	"dtDiario": "01/01/2019",
-	"nuDiario": 5179,
-	"cdCaderno": 0,
-	"cdSecoes": 0
+  "dtDiario": "01/01/2019",
+  "nuDiario": 5179,
+  "cdCaderno": 0,
+  "cdSecoes": 0
 }
 ```
 
@@ -328,8 +328,8 @@ pm2 unstartup systemd
 
 ```json
 {
-	"dtDiarioCad": "01/01/2019",
-	"cadernosCad": "-1",
+  "dtDiarioCad": "01/01/2019",
+  "cadernosCad": "-1",
 }
 ```
 
@@ -359,10 +359,10 @@ pm2 unstartup systemd
 
 ```json
 {
-	"dtInicio": "01/01/2019",
-	"dtFim": "31/12/2019",
-	"cdCaderno": "-11",
-	"pesquisaLivre": "\"Palavras-chave aqui\""
+  "dtInicio": "01/01/2019",
+  "dtFim": "31/12/2019",
+  "cdCaderno": "-11",
+  "pesquisaLivre": "\"Palavras-chave aqui\""
 }
 ```
 
