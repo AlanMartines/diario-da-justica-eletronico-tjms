@@ -253,7 +253,7 @@ pm2 unstartup systemd
 ```json
 {
   "dtDiario": "01/01/2019",
-  "nuDiario": 5179
+  "nuDiarioCadUnificado": 5179
 }
 ```
 
@@ -431,7 +431,7 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
   },
   body: JSON.stringify({
 		"dtDiario": "01/01/2019",
-		"nuEdicao": 5179
+		"nuDiarioCadUnificado": 5179
   }),
 })
   .then((response) => response.json())

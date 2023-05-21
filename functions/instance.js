@@ -1,7 +1,33 @@
 //
+const axios = require('axios');
+const fs = require('fs-extra');
 const browserObject = require('../browser');
 const { logger } = require("../utils/logger");
 const config = require("../config.global");
+//
+async function downloadPdfAndConvertToBase64(url) {
+  try {
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer'
+    });
+		//
+    const pdfData = Buffer.from(response.data, 'binary').toString('base64');
+    // Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
+    logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
+		return pdfData;
+  } catch (error) {
+			//
+			logger?.error(`- Ocorreu um erro ao baixar o PDF: ${error.message}`);
+			return {
+				"erro": true,
+				"status": 401,
+				"message": 'Ocorreu um erro ao baixar o PDF',
+				"search": error?.message
+			};
+			//
+  }
+}
+//
 async function obterValorDaTabela(page) {
 	//
 	if (page) {
@@ -34,6 +60,35 @@ async function obterValorDaTabela(page) {
 }
 //
 module.exports = class Instance {
+	//
+	static async cadUnificado(dtInicio, nuDiarioCadUnificado) {
+		//
+		try {
+			//
+			let url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
+			let pdfBase64 = await downloadPdfAndConvertToBase64(url);
+			//
+			return {
+				"erro": false,
+				"status": 200,
+				"message": 'Pesquisa efetuada com sucesso.',
+				"pdfBase64": pdfBase64
+			};
+			//
+		} catch (error) {
+			//
+			logger?.error(`- Erro, ${error.message}`);
+			return {
+				"erro": true,
+				"status": 401,
+				"message": 'Erro, não foi possivel efetuar o download.',
+				"search": error?.message
+			};
+			//
+		}
+	} //searchAdvanced
+	//
+	// ------------------------------------------------------------------------------------------------------- //
 	//
 	static async searchAdvanced(dtInicio, dtFim, cdCaderno, pesquisaLivre) {
 		let browser;
@@ -152,7 +207,7 @@ module.exports = class Instance {
 			};
 			//
 		}
-	} //Status
+	} //searchAdvanced
 	//
 	// ------------------------------------------------------------------------------------------------------- //
 	//

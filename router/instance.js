@@ -6,6 +6,53 @@ const instance = require("../functions/instance");
 const { logger } = require("../utils/logger");
 const config = require("../config.global");
 //
+// ------------------------------------------------------------------------------------------------//
+//
+// Caderno unificado
+router.post("/cadUnificado", async (req, res, next) => {
+	//
+	try {
+		if (!req?.body?.dtInicio || !req?.body?.nuDiarioCadUnificado ) {
+			var resultRes = {
+				"erro": true,
+				"status": 400,
+				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
+			};
+			//
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(resultRes.status).json({
+				"result": resultRes
+			});
+			//
+		} 
+		//
+		let cadUnificado = await instance.cadUnificado(req?.body?.dtInicio, req?.body?.nuDiarioCadUnificado);
+		//
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(cadUnificado.status).json({
+			"result": cadUnificado
+		});
+		//
+	} catch (error) {
+		logger?.error(error);
+		//
+		var resultRes = {
+			"erro": true,
+			"status": 403,
+			"message": 'Não foi possivel executar a ação, verifique e tente novamente.'
+		};
+		//
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(resultRes.status).json({
+			"result": resultRes
+		});
+		//
+	}
+}); //Caderno unificado
+//
+// ------------------------------------------------------------------------------------------------//
+//
+// Pesquisa avançada
 router.post("/searchAdvanced", async (req, res, next) => {
 	//
 	try {
@@ -45,7 +92,7 @@ router.post("/searchAdvanced", async (req, res, next) => {
 		});
 		//
 	}
-}); //Start
+}); //Pesquisa avançada
 //
 // ------------------------------------------------------------------------------------------------//
 //
