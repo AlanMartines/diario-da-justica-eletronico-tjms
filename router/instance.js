@@ -12,11 +12,11 @@ const config = require("../config.global");
 router.post("/cadUnificado", async (req, res, next) => {
 	//
 	try {
-		if (!req?.body?.dtInicio || !req?.body?.nuDiarioCadUnificado ) {
+		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado ) {
 			var resultRes = {
 				"erro": true,
 				"status": 400,
-				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente!'
+				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
 			};
 			//
 			res.setHeader('Content-Type', 'application/json');
@@ -26,7 +26,7 @@ router.post("/cadUnificado", async (req, res, next) => {
 			//
 		} 
 		//
-		let cadUnificado = await instance.cadUnificado(req?.body?.dtInicio, req?.body?.nuDiarioCadUnificado);
+		let cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.nuDiarioCadUnificado);
 		//
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(cadUnificado.status).json({
