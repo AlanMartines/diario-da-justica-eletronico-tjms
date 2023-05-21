@@ -48,27 +48,49 @@ module.exports = class Instance {
 			// Realize as operações de scraping aqui
 			//
 			// Aguarda o seletor que representa a tabela ficar visível
-			await page.waitForSelector('tr.ementaClass');
+			const divResultadosSuperiorHandle = await page.$('#divResultadosSuperior');
+			//
+			if (!divResultadosSuperiorHandle) {
+				// Extrair o texto do elemento
+				let text = await page.evaluate(() => {
+					let tabela = document.querySelector('div.ementaClass');
+					let strong = tabela.querySelector('strong').innerText.trim();
+					//
+					return strong
+					//
+				});
+				//
+				logger?.info(`- ${text}`);
+				return {
+					"erro": true,
+					"status": 401,
+					"message": text,
+					"search": null
+				};
+				//
+			}
 			//
 			// Obtenha o valor desejado
 			let valorPaginas = await page.evaluate(() => {
 				let tabela = document.querySelector('#divResultadosSuperior table');
-				let celula = tabela.querySelector('td');
-				let resPg = celula.innerText.trim().split(' ');
+				let celula = tabela.querySelector('td').innerText.trim();
+				let resPg = celula.split(' ');
 				//
 				return {
+					innerText: celula,
 					pgInicial: parseInt(resPg[1]),
 					pgFinal: parseInt(resPg[3]),
 					resTotal: parseInt(resPg[5]),
 					tPag: Math.ceil(resPg[5] / 10)
 				};
+				//
 			});
 			//
-			logger?.info(`- Paginas: ${valorPaginas}`);
+			logger?.info(`- ${valorPaginas.innerText}`);
 			//
 			let resultados = [];
 			//
-			if (valorPaginas.tPag >= 2) {
+			if (valorPaginas.resTotal >= 11) {
 				for (let i = 2; i <= valorPaginas.tPag; i++) {
 					//
 					let resTable = await obterValorDaTabela(page).then(async (data) => {
