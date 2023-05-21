@@ -11,10 +11,11 @@ async function downloadPdfAndConvertToBase64(url) {
       responseType: 'arraybuffer'
     });
 		//
-    const pdfData = Buffer.from(response.data, 'binary').toString('base64');
+    const data = Buffer.from(response.data, 'binary').toString('base64');
+    const mimeType = response.headers['content-type'];
     // Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
     logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
-		return pdfData;
+		return { data, mimeType };
   } catch (error) {
 			//
 			logger?.error(`- Ocorreu um erro ao baixar o PDF: ${error.message}`);
@@ -72,7 +73,7 @@ module.exports = class Instance {
 				"erro": false,
 				"status": 200,
 				"message": 'Pesquisa efetuada com sucesso.',
-				"pdfBase64": pdfBase64
+				"result": pdfBase64
 			};
 			//
 		} catch (error) {
