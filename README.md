@@ -145,7 +145,7 @@ cd ~
 curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -
 
 # Instalar o pacote Node.js
-sudo apt install -y git nodejs yarn gcc g++ make vim curl python python3
+sudo apt install -y git nodejs yarn gcc g++ make vim curl python3
 
 # Remover pacotes que não são mais necessários
 sudo apt autoremove -y
