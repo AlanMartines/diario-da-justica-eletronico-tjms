@@ -252,8 +252,8 @@ pm2 unstartup systemd
 #### Json (POST)
 ```json
 {
-	"dtInicio": "01/01/2019",
-	"nEdicao": 5179
+	"dtDiario": "01/01/2019",
+	"nuDiario": 5179
 }
 ```
 
@@ -263,10 +263,10 @@ pm2 unstartup systemd
 
 ```json
 {
-	"dtInicio": "01/01/2019",
-	"nEdicao": 5179,
+	"dtDiario": "01/01/2019",
+	"nuDiario": 5179,
 	"cdCaderno": 0,
-	"vEdicao": 0
+	"cdSecoes": 0
 }
 ```
 
@@ -328,8 +328,8 @@ pm2 unstartup systemd
 
 ```json
 {
-	"dtInicio": "01/01/2019",
-	"cdCaderno": "-1",
+	"dtDiarioCad": "01/01/2019",
+	"cadernosCad": "-1",
 }
 ```
 
@@ -430,8 +430,8 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-		"dtInicio": "01/01/2019",
-		"nEdicao": 5179
+		"dtDiario": "01/01/2019",
+		"nuEdicao": 5179
   }),
 })
   .then((response) => response.json())
@@ -450,10 +450,10 @@ await fetch("http://localhost:8009/instance/consultaSimples", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-		"dtInicio": "01/01/2019",
-		"nEdicao": 5179,
+		"dtDiario": "01/01/2019",
+		"nuDiario": 5179,
 		"cdCaderno": 0,
-		"vEdicao": 0
+		"cdSecoes": 0
   }),
 })
   .then((response) => response.json())
@@ -472,8 +472,8 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-		"dtInicio": "01/01/2019",
-		"cdCaderno": "-1",
+		"dtDiarioCad": "01/01/2019",
+		"cadernosCad": "-1",
   }),
 })
   .then((response) => response.json())
