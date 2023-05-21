@@ -224,21 +224,6 @@ cd ApiTJMS
 # Instale as dependências
 npm install --allow-root --unsafe-perm=true
 
-# Clone este repositório
-git clone https://github.com/wppconnect-team/wppconnect.git
-
-# Acesse a pasta do projeto no terminal/cmd
-cd wppconnect
-
-# Instale as dependências
-npm install --allow-root --unsafe-perm=true
-
-# Building WPPConnect
-npm run build
-
-# Ir para seu diretório anterior
-cd ..
-
 # Configuração inicial
 cp .env-example .env
 
