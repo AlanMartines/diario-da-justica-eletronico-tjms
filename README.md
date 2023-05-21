@@ -264,8 +264,6 @@ pm2 unstartup systemd
 
 ## Rotas
 
-> As rota se encontra no arquivo [Insomnia.json](https://github.com/AlanMartines/mywhatsapp-api-node-baileys-md/blob/master/Insomnia.json "Insomnia.json"), importe para seu Insomnia e desfrute da API.
-
 #### Json (POST)
 
 ```json
