@@ -11,8 +11,8 @@ async function downloadPdfAndConvertToBase64(url) {
 		const response = await axios.get(url, { responseType: 'arraybuffer' });
 		const data = Buffer.from(response.data, 'binary');
 		const base64Data = data.toString('base64');
-		const fileInfo = fileType(data);
-		//const mimeType = fileInfo.mime;
+    const fileInfo = fileType(data);
+    const mimeType = fileInfo.mime;
 		// Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
 		//
@@ -20,7 +20,7 @@ async function downloadPdfAndConvertToBase64(url) {
 			"erro": false,
 			"status": 200,
 			"message": 'PDF baixado e convertido para base64 com sucesso',
-			"result": { data: base64Data, fileInfo }
+			"result": { data: base64Data, mimeType }
 		};
 		//
 	} catch (error) {
