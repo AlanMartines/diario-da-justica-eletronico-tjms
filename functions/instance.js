@@ -1,27 +1,20 @@
 //
 const axios = require('axios');
 const fs = require('fs-extra');
-const fileType = require('file-type');
 const browserObject = require('../browser');
 const { logger } = require("../utils/logger");
 const config = require("../config.global");
 //
 async function downloadPdfAndConvertToBase64(url) {
   try {
-    const response = await axios.get(url, { responseType: 'arraybuffer' });
-    const data = Buffer.from(response.data, 'binary');
-    const mimeType = mime.contentType('pdf');
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer'
+    });
 		//
-    // Verificar se o tipo MIME é PDF antes de prosseguir
-    if (mimeType !== 'application/pdf') {
-      throw new Error('O arquivo não é um PDF válido.');
-    }
-		//
-    const base64Data = data.toString('base64');
-		//
+    const pdfData = Buffer.from(response.data, 'binary').toString('base64');
+    // Aqui você pode fazer o que desejar com a representação em base64, como salvá-la em um arquivo ou utilizá-la de outra forma.
     logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
-		// Retornar o Base64 e o tipo MIME
-    return { data: base64Data, mimeType };
+		return pdfData;
   } catch (error) {
 			//
 			logger?.error(`- Ocorreu um erro ao baixar o PDF: ${error.message}`);
@@ -29,7 +22,7 @@ async function downloadPdfAndConvertToBase64(url) {
 				"erro": true,
 				"status": 401,
 				"message": 'Ocorreu um erro ao baixar o PDF',
-				"search": null
+				"search": error?.message
 			};
 			//
   }
@@ -69,19 +62,9 @@ async function obterValorDaTabela(page) {
 module.exports = class Instance {
 	//
 	static async cadUnificado(dtInicio, nuDiarioCadUnificado) {
-		//
+		let url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
 		try {
-			//
-			let url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
-			let pdfBase64 = await downloadPdfAndConvertToBase64(url);
-			//
-			return {
-				"erro": false,
-				"status": 200,
-				"message": 'Pesquisa efetuada com sucesso.',
-				"result": pdfBase64
-			};
-			//
+
 		} catch (error) {
 			//
 			logger?.error(`- Erro, ${error.message}`);
