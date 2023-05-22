@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Diário da Justiça Eletrônico - TJMS",
   "main": "index.js",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Erro: nenhum teste especificado\" && exit 1"
