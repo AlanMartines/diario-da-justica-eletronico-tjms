@@ -263,8 +263,8 @@ pm2 unstartup systemd
 
 ```json
 {
-  "dtDiarioCad": "01/01/2019",
-  "cadernosCad": "-1",
+  "dtDiario": "01/01/2019",
+  "cdCaderno": "-1",
 }
 ```
 
@@ -385,8 +385,8 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-	"dtDiarioCad": "01/01/2019",
-	"cadernosCad": "-1",
+	"dtDiario": "01/01/2019",
+	"cdCaderno": "0",
   }),
 })
   .then((response) => response.json())
