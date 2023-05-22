@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
 const path = require('path');
+const latest = require('latest-version'); // verifica a ultima release no npm
+const { version } = require('./package.json');
 const { logger } = require("./utils/logger");
 const config = require("./config.global");
 const http = require('http').Server(app);
@@ -178,6 +180,27 @@ SECRET_KEY=096e402586e2faa8db20d6b033c60
 					logger?.info(`- HTTP Server running on`);
 					logger?.info(`- To start: ${host}`);
 					//
+					logger?.info(`- Verificando Atualizações`);
+					io.emit('version', {
+						newVersion: undefined,
+						message: `Verificando Atualizações`
+					});
+					//
+					let repoVersion = await latest('diario-da-justica-eletronico-tjms');
+					if (await Sessions.upToDate(version, repoVersion)) {
+						logger?.info(`- API esta Atualizada com a versão mais recente`);
+						io.emit('version', {
+							newVersion: false,
+							message: `API esta Atualizada com a versão mais recente`
+						});
+					} else {
+						logger?.info(`- Há uma nova versão disponível`);
+						io.emit('version', {
+							newVersion: true,
+							message: `Há uma nova versão disponível`
+						});
+						await Sessions.logUpdateAvailable(version, repoVersion);
+					}
 				}
 				//
 			});
