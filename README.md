@@ -365,8 +365,8 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-		"dtDiario": "01/01/2019",
-		"nuDiarioCadUnificado": "5179"
+	"dtDiario": "01/01/2019",
+	"nuDiarioCadUnificado": "5179"
   }),
 })
   .then((response) => response.json())
@@ -385,8 +385,8 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-		"dtDiarioCad": "01/01/2019",
-		"cadernosCad": "-1",
+	"dtDiarioCad": "01/01/2019",
+	"cadernosCad": "-1",
   }),
 })
   .then((response) => response.json())
@@ -405,10 +405,10 @@ await fetch("http://localhost:8009/instance/searchAdvanced", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-		"dtInicio": "01/01/2019",
-		"dtFim": "31/12/2019",
-		"cdCaderno": "-11",
-		"pesquisaLivre": "\"Palavras-chave aqui\""
+	"dtInicio": "01/01/2019",
+	"dtFim": "31/12/2019",
+	"cdCaderno": "-11",
+	"pesquisaLivre": "\"Palavras-chave aqui\""
   }),
 })
   .then((response) => response.json())
