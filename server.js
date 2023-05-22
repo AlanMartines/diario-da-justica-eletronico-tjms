@@ -10,6 +10,7 @@ const path = require('path');
 const latest = require('latest-version'); // verifica a ultima release no npm
 const { version } = require('./package.json');
 const { logger } = require("./utils/logger");
+const Sessions = require("./controllers/sessions");
 const config = require("./config.global");
 const http = require('http').Server(app);
 // https://www.scaleway.com/en/docs/tutorials/socket-io/
