@@ -431,29 +431,7 @@ await fetch("http://localhost:8009/instance/downloadCaderno", {
   },
   body: JSON.stringify({
 		"dtDiario": "01/01/2019",
-		"nuDiarioCadUnificado": 5179
-  }),
-})
-  .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => console.error(error));
-```
-
-#### Consulta dos cadernos (POST method)
-###### Consulta aos cadernos das edições do Diário da Justiça Eletrônico.
-
-```js
-await fetch("http://localhost:8009/instance/consultaSimples", {
-  method: "POST",
-  headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-		"dtDiario": "01/01/2019",
-		"nuDiario": 5179,
-		"cdCaderno": 0,
-		"cdSecoes": 0
+		"nuDiarioCadUnificado": "5179"
   }),
 })
   .then((response) => response.json())
