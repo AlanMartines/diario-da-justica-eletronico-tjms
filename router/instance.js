@@ -53,6 +53,52 @@ router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next)
 //
 // ------------------------------------------------------------------------------------------------//
 //
+// Consulta dos cadernos
+router.post("/downloadCad", async (req, res, next) => {
+	//
+	try {
+		//
+		if (!req?.body?.dtDiario || !req?.body?.cdCaderno) {
+			var resultRes = {
+				"erro": true,
+				"status": 400,
+				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
+			};
+			//
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(resultRes.status).json({
+				"result": resultRes
+			});
+			//
+		} 
+		//
+		let downloadCad = await instance.downloadCad(req?.body?.dtDiario, req?.body?.cdCaderno);
+		//
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(downloadCad.status).json({
+			"result": downloadCad
+		});
+		//
+	} catch (error) {
+		logger?.error(error);
+		//
+		var resultRes = {
+			"erro": true,
+			"status": 403,
+			"message": 'Não foi possivel executar a ação, verifique e tente novamente.'
+		};
+		//
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(resultRes.status).json({
+			"result": resultRes
+		});
+		//
+	}
+}); //Consulta dos cadernos
+
+//
+// ------------------------------------------------------------------------------------------------//
+//
 // Pesquisa avançada
 router.post("/searchAdvanced", async (req, res, next) => {
 	//

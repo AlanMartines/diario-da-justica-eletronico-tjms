@@ -68,10 +68,10 @@ async function obterValorDaTabela(page) {
 //
 module.exports = class Instance {
 	//
-	static async cadUnificado(dtInicio, nuDiarioCadUnificado, view) {
+	static async cadUnificado(dtInicio, nuDiarioCadUnificado) {
 		let url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
 		try {
-			return await downloadPdfAndConvertToBase64(url, view);
+			return await downloadPdfAndConvertToBase64(url);
 		} catch (error) {
 			//
 			logger?.error(`- Erro, ${error.message}`);
@@ -84,6 +84,25 @@ module.exports = class Instance {
 			//
 		}
 	} //searchAdvanced
+	//
+	// ------------------------------------------------------------------------------------------------------- //
+	//
+	static async downloadCad(dtInicio, cdCaderno) {
+		let url = `https://esaj.tjms.jus.br/cdje/downloadCaderno.do?dtDiario=${dtInicio}&cdCaderno=${cdCaderno}&tpDownload=V`;
+		try {
+			return await downloadPdfAndConvertToBase64(url);
+		} catch (error) {
+			//
+			logger?.error(`- Erro, ${error.message}`);
+			return {
+				"erro": true,
+				"status": 401,
+				"message": 'Erro, não foi possivel efetuar o download.',
+				"search": error?.message
+			};
+			//
+		}
+	} //searchCad
 	//
 	// ------------------------------------------------------------------------------------------------------- //
 	//
