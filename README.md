@@ -247,6 +247,11 @@ pm2 unstartup systemd
 # Pronto, escaneie o código QR-Code do Whatsapp e aproveite!
 ```
 
+## Rotas
+
+> As rota se encontra no arquivo [Insomnia.json](https://github.com/AlanMartines/diario-da-justica-eletronico-tjms/blob/master/Insomnia.json "Insomnia.json"), importe para seu Insomnia e desfrute da API.
+
+
 ## Rota - Caderno unificado
 
 #### Json (POST)

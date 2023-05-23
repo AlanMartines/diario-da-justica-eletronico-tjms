@@ -1,0 +1,199 @@
+{
+	"_type": "export",
+	"__export_format": 4,
+	"__export_date": "2023-05-23T13:46:40.424Z",
+	"__export_source": "insomnia.desktop.app:v2023.2.2",
+	"resources": [
+		{
+			"_id": "req_174e1288d64e4139a35a92518972ae64",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1684717950107,
+			"created": 1684689999156,
+			"url": "{{ _.Localhost }}/instance/cadUnificado",
+			"name": "Caderno unificado",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n  \"dtDiario\": \"19/05/2019\",\n  \"nuDiarioCadUnificado\": \"5179\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1683492424446.5,
+			"isPrivate": false,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"parentId": null,
+			"modified": 1684689582170,
+			"created": 1684689582170,
+			"name": "Diário da Justiça Eletrônico - TJMS",
+			"description": "",
+			"scope": "collection",
+			"_type": "workspace"
+		},
+		{
+			"_id": "req_ac470f32227d4d5e98646a1a3b7aad27",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1684717418591,
+			"created": 1684714789844,
+			"url": "{{ _.Localhost }}/instance/downloadCad",
+			"name": "Download dos cadernos",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n  \"dtDiario\": \"01/01/2019\",\n  \"cdCaderno\": \"0\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1683492424396.5,
+			"isPrivate": false,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "req_ce62e5140d0141ce9edba13c1841cee1",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1684849494294,
+			"created": 1684689601348,
+			"url": "{{ _.Localhost }}/instance/searchAdvanced",
+			"name": "Pesquisa avançada",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"dtInicio\": \"01/05/2023\",\n\t\"dtFim\": \"22/05/2023\",\n\t\"cdCaderno\": \"-11\",\n\t\"pesquisaLivre\": \"\\\"Palavra chave aqui\\\"\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1683492424346.5,
+			"isPrivate": false,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "env_bc9e13e6b9c3d3ef8fa0a5355805a117309eb4ce",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1684689636448,
+			"created": 1684689582175,
+			"name": "Base Environment",
+			"data": {
+				"encript": "https://",
+				"domain": "apiwa.eletroinfo.site",
+				"port": "443",
+				"Localhost": "{{ _.encript }}{{ _.domain }}:{{ _.port }}",
+				"WebHook": "https://integrador.eletroinfo.site/webhook/mywhatsappbot",
+				"SECRET_KEY_OR_TOKEN": "pcsjGQBsBVXwK2RXRDIuwv5CaF6PQEXMtoGK0kLEbSyfdQIAVmPWllxoSDUz2ucnYx3Ui3yXg0Ooakhxcfw",
+				"SessionName": "EletroInfo"
+			},
+			"dataPropertyOrder": {
+				"&": [
+					"encript",
+					"domain",
+					"port",
+					"Localhost",
+					"WebHook",
+					"SECRET_KEY_OR_TOKEN",
+					"SessionName"
+				]
+			},
+			"color": null,
+			"isPrivate": false,
+			"metaSortKey": 1684689582175,
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_bc9e13e6b9c3d3ef8fa0a5355805a117309eb4ce",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1684848089395,
+			"created": 1684689582177,
+			"name": "Default Jar",
+			"cookies": [
+				{
+					"key": "PHPSESSID",
+					"value": "pvedjjg3qmr2giddjaq2v3fuqp",
+					"domain": "painel.connectzap.com.br",
+					"path": "/",
+					"hostOnly": true,
+					"creation": "2023-05-23T13:21:29.395Z",
+					"lastAccessed": "2023-05-23T13:21:29.395Z",
+					"id": "19133316116163313"
+				}
+			],
+			"_type": "cookie_jar"
+		},
+		{
+			"_id": "spc_ceb12a1eafcc413391a252dda0fd2f14",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1684689582171,
+			"created": 1684689582171,
+			"fileName": "Diário da Justiça Eletrônico - TJMS",
+			"contents": "",
+			"contentType": "yaml",
+			"_type": "api_spec"
+		},
+		{
+			"_id": "env_ea03f3fe93634e6ebcf0cfb779b69257",
+			"parentId": "env_bc9e13e6b9c3d3ef8fa0a5355805a117309eb4ce",
+			"modified": 1684849549510,
+			"created": 1684689641907,
+			"name": "API - TJMS",
+			"data": {
+				"encript": "http://",
+				"domain": "localhost",
+				"port": "8009",
+				"Localhost": "{{ _.encript }}{{ _.domain }}:{{ _.port }}",
+				"SECRET_KEY_OR_TOKEN": "pcsjGQBsBVXwK2RXRDIuwv5CaF6P"
+			},
+			"dataPropertyOrder": {
+				"&": [
+					"encript",
+					"domain",
+					"port",
+					"Localhost",
+					"SECRET_KEY_OR_TOKEN"
+				]
+			},
+			"color": null,
+			"isPrivate": false,
+			"metaSortKey": 1684689641907,
+			"_type": "environment"
+		}
+	]
+}
