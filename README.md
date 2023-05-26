@@ -463,7 +463,7 @@ npm install --allow-root --unsafe-perm=true
 cp .env-example .env
 
 # Processando o arquivo Dockerfile
-docker build -t alanmartines/alanmartines/api-node-tjms:1.0.0 -f Dockerfile.backend .
+docker build -t alanmartines/api-node-tjms:1.0.0 -f Dockerfile.backend .
 
 # Criar contêiner
 docker run -d \
@@ -479,7 +479,7 @@ docker run -d \
 	-e SECRET_KEY='09f26e402586e2faa8da4c98a35f1b20d6b033c60' \
 	-e CHROME_BIN= \
 	-e WSENDPOINT= \
-  alanmartines/alanmartines/api-node-tjms:1.0.0
+  alanmartines/api-node-tjms:1.0.0
 
 ```
 
