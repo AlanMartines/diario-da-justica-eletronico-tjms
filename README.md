@@ -469,12 +469,12 @@ docker build -t alanmartines/alanmartines/api-node-tjms:1.0.0 -f Dockerfile.back
 docker run -d \
 	--name ApiTJMS \
 	--hostname ApiTJMS \
-	-p 1010:9001 \
+	-p 8009:8009 \
 	--restart=unless-stopped \
 	-v ${PWD}:/home/ApiTJMS \
 	-e NODE_EN=production \
 	-e HOST=0.0.0.0 \
-	-e PORT=9001 \
+	-e PORT=8009 \
 	-e DOMAIN_SSL= \
 	-e SECRET_KEY='09f26e402586e2faa8da4c98a35f1b20d6b033c60' \
 	-e CHROME_BIN= \
