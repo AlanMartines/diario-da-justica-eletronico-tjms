@@ -4,7 +4,7 @@ LABEL version="1.0.0" description="ApiBaileysMd" maintainer="Alan Martines<alanc
 
 RUN mkdir -p /home/ApiTJMS
 
-RUN sudo apt update && \
+RUN apt update && \
 apt upgrade -y && \
 apt install -y \
 git \
