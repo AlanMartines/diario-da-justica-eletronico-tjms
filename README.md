@@ -421,6 +421,127 @@ await fetch("http://localhost:8009/instance/searchAdvanced", {
   .catch((error) => console.error(error));
 ```
 
+
+## Docker-Compose
+
+```bash
+# Ir para seu diretório home
+cd ~
+
+# Clone este repositório
+git clone https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git ApiTJMS
+
+# Acesse a pasta do projeto no terminal/cmd
+cd ApiTJMS
+
+# Instale as dependências
+npm install --allow-root --unsafe-perm=true
+
+# Configuração inicial
+cp .env-example .env
+
+# Criar um contêiner
+docker compose -f docker-compose.yml up --build -d
+```
+
+## Dockerfile
+
+```bash
+# Ir para seu diretório home
+cd ~
+
+# Clone este repositório
+git clone https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git ApiTJMS
+
+# Acesse a pasta do projeto no terminal/cmd
+cd ApiTJMS
+
+# Instale as dependências
+npm install --allow-root --unsafe-perm=true
+
+# Configuração inicial
+cp .env-example .env
+
+# Processando o arquivo Dockerfile
+docker build -t alanmartines/alanmartines/api-node-tjms:1.0.0 -f Dockerfile.backend .
+
+# Criar contêiner
+docker run -d \
+	--name ApiTJMS \
+	--hostname ApiTJMS \
+	-p 1010:9001 \
+	--restart=unless-stopped \
+	-v ${PWD}:/home/ApiTJMS \
+	-e NODE_EN=production \
+	-e HOST=0.0.0.0 \
+	-e PORT=9001 \
+	-e DOMAIN_SSL= \
+	-e SECRET_KEY='09f26e402586e2faa8da4c98a35f1b20d6b033c60' \
+	-e CHROME_BIN= \
+	-e WSENDPOINT= \
+  alanmartines/alanmartines/api-node-tjms:1.0.0
+
+```
+
+## Instalar o certbot Debian (e.g. Ubuntu) 64bits
+
+```barsh
+# Instalar Python e cerbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# Renew certificate interactively
+sudo certbot renew
+```
+
+## Instalar o certbot CentOS 7/8 64bits
+
+```barsh
+# Instalar Python e cerbot
+sudo yum install -y epel-release
+
+# Instalar plugin para nginex
+sudo yum install -y certbot-nginx
+
+# Renew certificate interactively
+sudo certbot renew
+```
+
+## Instalar o certbot Alpine 64bits
+
+```barsh
+# Instalar Python
+apk add --update python3 py3-pip
+
+# Instalar cerbot
+apk add certbot
+
+# Instalar plugin para nginex
+pip install certbot-nginx
+
+# Renew certificate interactively
+certbot renew
+```
+
+## Criar o certificado SSL para domínios https Debian (e.g. Ubuntu) 64bits e CentOS 7/8 64bits
+
+```barsh
+sudo certbot certonly --manual --force-renewal -d *.yourdomain.net -d yourdomain.net \
+--agree-tos --no-bootstrap --manual-public-ip-logging-ok --preferred-challenges dns-01 \
+--server https://acme-v02.api.letsencrypt.org/directory
+```
+
+## Criar o certificado SSL para domínios https Alpine 64bits
+
+```barsh
+certbot certonly --manual --force-renewal -d *.yourdomain.net -d yourdomain.net \
+--agree-tos --no-bootstrap --manual-public-ip-logging-ok --preferred-challenges dns-01 \
+--server https://acme-v02.api.letsencrypt.org/directory
+```
+
+## Em desenvolvimento
+
+Este projeto se encontra em desenvolvimento, então pode conter erros.
+
 ## Reflexão
 
 <blockquote>
