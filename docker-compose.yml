@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+
+  backend:
+    container_name: ${HOST_NAME:-'ApiTJMS'}
+    hostname: ${HOST_NAME:-'ApiTJMS'}
+    network_mode: bridge
+    image: alanmartines/api-node-tjms:${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8009
+      DOMAIN_SSL: ${DOMAIN_SSL:-}
+      SECRET_KEY: ${SECRET_KEY:-09f26e402586e2faa8da4c98a35f1b20d6b033c60}
+      CHROME_BIN: ${CHROME_BIN:-}
+      WSENDPOINT: ${WSENDPOINT:-}
+    volumes:
+      - .:/home/ApiTJMS:rw
+    ports:
+      - ${PORT:-8009}:8009
