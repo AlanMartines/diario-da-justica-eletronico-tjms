@@ -6,10 +6,25 @@ const { logger } = require("../utils/logger");
 let browserInstance;
 
 async function getBrowser() {
+	// Verifica se o browser existe e se a conexão ainda está ativa
 	if (!browserInstance || !browserInstance.isConnected()) {
+		logger?.info("- Instância do navegador não encontrada ou desconectada. Iniciando novo browser...");
 		browserInstance = await browserObject.startBrowser();
 	}
 	return browserInstance;
+}
+
+// Função auxiliar para fechar a página com segurança
+async function safelyClosePage(page) {
+	if (page) {
+		try {
+			if (!page.isClosed()) {
+				await page.close();
+			}
+		} catch (err) {
+			logger?.warn(`- Aviso ao fechar página: ${err.message}`);
+		}
+	}
 }
 
 async function downloadPdfAndConvertToBase64(url) {
@@ -43,43 +58,46 @@ async function downloadPdfAndConvertToBase64(url) {
 
 async function obterValorDaTabela(page) {
 	if (page) {
-		return await page.evaluate(() => {
-			const tokenElement = document.querySelector('input[name="recaptcha_response_token"]');
-			const token = tokenElement ? tokenElement.innerText.trim() : '';
-			const resultados = document.querySelectorAll('table.fundocinza1, tr.fundocinza1');
-			const res = [];
-			
-			resultados.forEach((item) => {
-				const titleElement = item.querySelector('.ementaClass td, tr.ementaClass td');
-				const descElement = item.querySelector('.ementaClass2 td, tr.ementaClass2 td');
-				const linkElement = item.querySelector('a.layout');
+		try {
+			return await page.evaluate(() => {
+				const tokenElement = document.querySelector('input[name="recaptcha_response_token"]');
+				const token = tokenElement ? tokenElement.innerText.trim() : '';
+				const resultados = document.querySelectorAll('table.fundocinza1, tr.fundocinza1');
+				const res = [];
 				
-				if (titleElement && descElement && linkElement) {
-					const title = titleElement.innerText.trim();
-					const description = descElement.innerText.trim();
-					const onclick = linkElement.getAttribute('onclick');
-					const padrao = /'([^']+)'/;
-					const match = onclick.match(padrao);
-					const linkRes = match && match[1];
+				resultados.forEach((item) => {
+					const titleElement = item.querySelector('.ementaClass td, tr.ementaClass td');
+					const descElement = item.querySelector('.ementaClass2 td, tr.ementaClass2 td');
+					const linkElement = item.querySelector('a.layout');
 					
-					// Tentar extrair o número da página da descrição ou título
-					const pgMatch = description.match(/Página:\s*(\d+)/i) || title.match(/Página:\s*(\d+)/i);
-					const pagina = pgMatch ? parseInt(pgMatch[1]) : null;
+					if (titleElement && descElement && linkElement) {
+						const title = titleElement.innerText.trim();
+						const description = descElement.innerText.trim();
+						const onclick = linkElement.getAttribute('onclick');
+						const padrao = /'([^']+)'/;
+						const match = onclick.match(padrao);
+						const linkRes = match && match[1];
+						
+						const pgMatch = description.match(/Página:\s*(\d+)/i) || title.match(/Página:\s*(\d+)/i);
+						const pagina = pgMatch ? parseInt(pgMatch[1]) : null;
 
-					res.push({
-						title: title,
-						description: description,
-						pagina: pagina,
-						link: `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkRes}&recaptcha_response_token=${token}`,
-						token: token,
-					});
-				}
+						res.push({
+							title: title,
+							description: description,
+							pagina: pagina,
+							link: `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkRes}&recaptcha_response_token=${token}`,
+							token: token,
+						});
+					}
+				});
+				return res;
 			});
-			return res;
-		});
-	} else {
-		return [];
+		} catch (e) {
+			logger?.error(`- Erro no evaluate da tabela: ${e.message}`);
+			return [];
+		}
 	}
+	return [];
 }
 
 module.exports = class Instance {
@@ -91,20 +109,15 @@ module.exports = class Instance {
 			page = await browser.newPage();
 			logger?.info(`- Coletando metadados do TJMS (Aguardando carregamento)...`);
 			
-			// Aumentar o tempo e esperar rede ociosa para garantir carregamento de scripts
 			await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do', { 
 				waitUntil: 'networkidle2',
 				timeout: 60000 
 			});
 			
-			// Aguardar que pelo menos um dos selects esteja presente
-			await page.waitForSelector('select[name="dadosConsulta.cdCaderno"], #cdCaderno', { timeout: 30000 }).catch(() => {
-				logger?.warn("- Selects não encontrados pelo seletor padrão, tentando extração forçada...");
-			});
+			await page.waitForSelector('select[name="dadosConsulta.cdCaderno"], #cdCaderno', { timeout: 30000 }).catch(() => {});
 
 			const metadata = await page.evaluate(() => {
 				const extractOptions = (nameOrId) => {
-					// Tentar por ID primeiro, depois por nome (padrão e-SAJ)
 					const select = document.getElementById(nameOrId) || 
 								   document.querySelector(`select[name="${nameOrId}"]`) ||
 								   document.querySelector(`select[name="dadosConsulta.${nameOrId}"]`);
@@ -125,28 +138,12 @@ module.exports = class Instance {
 				};
 			});
 
-			await page.close();
-			
-			// Verificar se capturou algo
-			if (metadata.cadernos.length === 0 && metadata.foros.length === 0) {
-				logger?.error("- Falha ao extrair metadados: Listas vazias.");
-			}
-
-			return {
-				"erro": false,
-				"status": 200,
-				"message": "Metadados coletados com sucesso.",
-				"result": metadata
-			};
+			await safelyClosePage(page);
+			return { "erro": false, "status": 200, "message": "Metadados coletados com sucesso.", "result": metadata };
 		} catch (error) {
 			logger?.error(`- Erro ao coletar metadados: ${error.message}`);
-			if (page) await page.close();
-			return {
-				"erro": true,
-				"status": 500,
-				"message": "Erro ao coletar metadados do TJMS.",
-				"search": error.message
-			};
+			await safelyClosePage(page);
+			return { "erro": true, "status": 500, "message": "Erro ao coletar metadados do TJMS.", "search": error.message };
 		}
 	}
 
@@ -156,9 +153,7 @@ module.exports = class Instance {
 			return await downloadPdfAndConvertToBase64(url);
 		} catch (error) {
 			logger?.error(`- Erro, ${error.message}`);
-			return {
-				"erro": true, "status": 500, "message": 'Erro, não foi possivel efetuar o download.', "search": error?.message
-			};
+			return { "erro": true, "status": 500, "message": 'Erro no download.', "search": error?.message };
 		}
 	}
 
@@ -168,9 +163,7 @@ module.exports = class Instance {
 			return await downloadPdfAndConvertToBase64(url);
 		} catch (error) {
 			logger?.error(`- Erro, ${error.message}`);
-			return {
-				"erro": true, "status": 500, "message": 'Erro, não foi possivel efetuar o download.', "search": error?.message
-			};
+			return { "erro": true, "status": 500, "message": 'Erro no download.', "search": error?.message };
 		}
 	}
 
@@ -197,7 +190,7 @@ module.exports = class Instance {
 					const strong = tabela ? tabela.querySelector('strong') : null;
 					return strong ? strong.innerText.trim() : "Nenhum resultado encontrado.";
 				});
-				await page.close();
+				await safelyClosePage(page);
 				return { "erro": true, "status": 404, "message": text, "search": null };
 			}
 
@@ -206,15 +199,11 @@ module.exports = class Instance {
 				const celula = tabela ? tabela.querySelector('td').innerText.trim() : "";
 				if (!celula) return null;
 				const resPg = celula.split(' ');
-				return {
-					innerText: celula,
-					resTotal: parseInt(resPg[5]),
-					tPag: Math.ceil(resPg[5] / 10)
-				};
+				return { resTotal: parseInt(resPg[5]), tPag: Math.ceil(resPg[5] / 10) };
 			});
 
 			if (!valorPaginas) {
-				await page.close();
+				await safelyClosePage(page);
 				return { "erro": true, "status": 404, "message": "Resultados não encontrados.", "search": null };
 			}
 
@@ -236,19 +225,14 @@ module.exports = class Instance {
 				}
 				const resTable = await obterValorDaTabela(page);
 				resultados = resultados.concat(resTable);
-				
-				// Limite de segurança para evitar loops infinitos em buscas muito grandes
-				if (resultados.length >= 500) {
-					logger?.warn("- Limite de 500 resultados atingido para uma única busca.");
-					break;
-				}
+				if (resultados.length >= 500) break;
 			}
 
-			await page.close();
+			await safelyClosePage(page);
 			return { "erro": false, "status": 200, "message": 'Pesquisa efetuada com sucesso.', "search": resultados };
 		} catch (error) {
-			logger?.error(`- Erro, ${error.message}`);
-			if (page) await page.close();
+			logger?.error(`- Erro na pesquisa: ${error.message}`);
+			await safelyClosePage(page);
 			return { "erro": true, "status": 500, "message": 'Erro interno na pesquisa.', "search": error?.message };
 		}
 	}
