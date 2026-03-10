@@ -5,16 +5,26 @@ const router = express.Router();
 const instance = require("../functions/instance");
 const { logger } = require("../utils/logger");
 const verify = require("../middleware/validarNumeroEdicao");
+const auth = require("../middleware/auth");
 //
 // ------------------------------------------------------------------------------------------------//
 //
+// Aplicar autenticação a todas as rotas neste roteador
+router.use(auth);
+
+// Checar IP (Depuração)
+router.get("/checkIP", async (req, res) => {
+	const check = await instance.checkIP();
+	return res.status(check.status).json(check);
+});
+
 // Caderno unificado
 router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next) => {
 	//
 	try {
 		//
 		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado) {
-			var resultRes = {
+			const resultRes = {
 				"erro": true,
 				"status": 400,
 				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
@@ -27,7 +37,7 @@ router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next)
 			//
 		} 
 		//
-		let cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.nuDiarioCadUnificado);
+		const cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.nuDiarioCadUnificado);
 		//
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(cadUnificado.status).json({
@@ -37,7 +47,7 @@ router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next)
 	} catch (error) {
 		logger?.error(error);
 		//
-		var resultRes = {
+		const resultRes = {
 			"erro": true,
 			"status": 403,
 			"message": 'Não foi possivel executar a ação, verifique e tente novamente.'
@@ -59,7 +69,7 @@ router.post("/downloadCad", async (req, res, next) => {
 	try {
 		//
 		if (!req?.body?.dtDiario || !req?.body?.cdCaderno) {
-			var resultRes = {
+			const resultRes = {
 				"erro": true,
 				"status": 400,
 				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
@@ -72,7 +82,7 @@ router.post("/downloadCad", async (req, res, next) => {
 			//
 		} 
 		//
-		let downloadCad = await instance.downloadCad(req?.body?.dtDiario, req?.body?.cdCaderno);
+		const downloadCad = await instance.downloadCad(req?.body?.dtDiario, req?.body?.cdCaderno);
 		//
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(downloadCad.status).json({
@@ -82,7 +92,7 @@ router.post("/downloadCad", async (req, res, next) => {
 	} catch (error) {
 		logger?.error(error);
 		//
-		var resultRes = {
+		const resultRes = {
 			"erro": true,
 			"status": 403,
 			"message": 'Não foi possivel executar a ação, verifique e tente novamente.'
@@ -104,7 +114,7 @@ router.post("/searchAdvanced", async (req, res, next) => {
 	//
 	try {
 		if (!req?.body?.dtInicio || !req?.body?.dtFim  || !req?.body?.cdCaderno || !req?.body?.pesquisaLivre ) {
-			var resultRes = {
+			const resultRes = {
 				"erro": true,
 				"status": 400,
 				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
@@ -117,7 +127,7 @@ router.post("/searchAdvanced", async (req, res, next) => {
 			//
 		} 
 		//
-		let searchAdvanced = await instance.searchAdvanced(req?.body?.dtInicio, req?.body?.dtFim, req?.body?.cdCaderno, req?.body?.pesquisaLivre);
+		const searchAdvanced = await instance.searchAdvanced(req?.body?.dtInicio, req?.body?.dtFim, req?.body?.cdCaderno, req?.body?.pesquisaLivre);
 		//
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(searchAdvanced.status).json({
@@ -127,7 +137,7 @@ router.post("/searchAdvanced", async (req, res, next) => {
 	} catch (error) {
 		logger?.error(error);
 		//
-		var resultRes = {
+		const resultRes = {
 			"erro": true,
 			"status": 403,
 			"message": 'Não foi possivel executar a ação, verifique e tente novamente.'
@@ -146,7 +156,7 @@ router.post("/searchAdvanced", async (req, res, next) => {
 // rota url erro
 router.all('*', (req, res) => {
 	//
-	var resultRes = {
+	const resultRes = {
 		"erro": true,
 		"status": 404,
 		"message": 'Não foi possivel executar a ação, verifique a url informada.'
