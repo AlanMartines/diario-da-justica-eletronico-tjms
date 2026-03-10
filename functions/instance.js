@@ -69,36 +69,70 @@ async function downloadPdfAndConvertToBase64(url, searchTerm = null) {
 async function obterValorDaTabela(page, dtDiario = '') {
     if (!page) return [];
     try {
+        // Tenta aguardar os campos de captcha brevemente
+        await page.waitForSelector('input[name*="captcha"], input[name*="recaptcha"]', { timeout: 3000 }).catch(() => {});
+
         return await page.evaluate((dt) => {
-            const el = document.querySelector('input[name="recaptcha_response_token"]') || 
-                       document.querySelector('input[name*="recaptcha"]') || 
-                       document.querySelector('input[id*="recaptcha"]');
-            const token = el ? el.value : '';
+            const getValue = (selectors) => {
+                for (const selector of selectors) {
+                    const el = document.querySelector(selector);
+                    if (el && el.value) return el.value;
+                }
+                return '';
+            };
+
+            const token = getValue([
+                'input[name="recaptcha_response_token"]',
+                'input[name*="recaptcha"]',
+                'input[id*="recaptcha"]',
+                '#recaptcha_response_token'
+            ]);
+
+            const uuidCaptcha = getValue([
+                'input[name="uuidCaptcha"]',
+                'input[id*="uuidCaptcha"]',
+                'input[name*="captchaUuid"]'
+            ]);
+
             const res = [];
             const linhas = document.querySelectorAll('tr.fundocinza1, table.fundocinza1 tr');
+            
             linhas.forEach((linha) => {
                 const titleElement = linha.querySelector('.ementaClass td') || linha.querySelector('td b');
                 const descElement = linha.querySelector('.ementaClass2 td') || linha.nextElementSibling?.querySelector('td');
                 const linkElement = linha.querySelector('a.layout') || linha.querySelector('a[onclick*="consultaSimples"]');
+                
                 if (titleElement && linkElement) {
                     const title = titleElement.innerText.trim();
                     const description = descElement ? descElement.innerText.trim() : "";
                     const onclick = linkElement.getAttribute('onclick');
                     const match = onclick ? onclick.match(/'([^']+)'/) : null;
+                    
                     if (match) {
                         const linkParams = match[1];
                         const pgMatch = description.match(/Página:\s*(\d+)/i) || title.match(/Página:\s*(\d+)/i);
+                        
+                        // Construção robusta do link
+                        let finalLink = `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkParams}&dtDiario=${dt}`;
+                        if (uuidCaptcha) finalLink += `&uuidCaptcha=${uuidCaptcha}`;
+                        if (token) finalLink += `&recaptcha_response_token=${token}`;
+
                         res.push({
-                            title: title, description: description,
+                            title: title,
+                            description: description,
                             pagina: pgMatch ? parseInt(pgMatch[1]) : null,
-                            link: `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkParams}&dtDiario=${dt}&recaptcha_response_token=${token}`
+                            link: finalLink,
+                            token: token,
+                            uuidCaptcha: uuidCaptcha
                         });
                     }
                 }
             });
             return res;
         }, dtDiario);
-    } catch (e) { return []; }
+    } catch (e) {
+        return [];
+    }
 }
 
 module.exports = class Instance {
