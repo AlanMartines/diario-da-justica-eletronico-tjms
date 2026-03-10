@@ -89,18 +89,33 @@ module.exports = class Instance {
 		try {
 			browser = await getBrowser();
 			page = await browser.newPage();
-			logger?.info(`- Coletando metadados do TJMS...`);
+			logger?.info(`- Coletando metadados do TJMS (Aguardando carregamento)...`);
 			
-			await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do', { waitUntil: 'domcontentloaded' });
+			// Aumentar o tempo e esperar rede ociosa para garantir carregamento de scripts
+			await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do', { 
+				waitUntil: 'networkidle2',
+				timeout: 60000 
+			});
 			
+			// Aguardar que pelo menos um dos selects esteja presente
+			await page.waitForSelector('select[name="dadosConsulta.cdCaderno"], #cdCaderno', { timeout: 30000 }).catch(() => {
+				logger?.warn("- Selects não encontrados pelo seletor padrão, tentando extração forçada...");
+			});
+
 			const metadata = await page.evaluate(() => {
-				const extractOptions = (selectId) => {
-					const select = document.getElementById(selectId);
+				const extractOptions = (nameOrId) => {
+					// Tentar por ID primeiro, depois por nome (padrão e-SAJ)
+					const select = document.getElementById(nameOrId) || 
+								   document.querySelector(`select[name="${nameOrId}"]`) ||
+								   document.querySelector(`select[name="dadosConsulta.${nameOrId}"]`);
+					
 					if (!select) return [];
-					return Array.from(select.options).map(opt => ({
-						valor: opt.value,
-						descricao: opt.text.trim()
-					})).filter(opt => opt.valor !== "");
+					return Array.from(select.options)
+						.filter(opt => opt.value && opt.value !== "" && opt.value !== "-1")
+						.map(opt => ({
+							valor: opt.value,
+							descricao: opt.text.trim()
+						}));
 				};
 
 				return {
@@ -111,6 +126,12 @@ module.exports = class Instance {
 			});
 
 			await page.close();
+			
+			// Verificar se capturou algo
+			if (metadata.cadernos.length === 0 && metadata.foros.length === 0) {
+				logger?.error("- Falha ao extrair metadados: Listas vazias.");
+			}
+
 			return {
 				"erro": false,
 				"status": 200,
