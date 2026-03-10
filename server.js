@@ -39,14 +39,14 @@ fs.access(".env", fs.constants.F_OK, async (err) => {
 	if (err && err.code === 'ENOENT') {
 		logger.error(`- Arquivo ".env" não encontrado, segue modelo de configuração:`);
 		var modelo = `
-NODE_EN=production
+NODE_ENV=production
 #
 # Defina o HOST aqui caso voce utilize uma VPS deve ser colocado o IP da VPS
 # Exemplos:
 # HOST=204.202.54.2 => IP da VPS, caso esteja usando virtualização via hospedagem
 # HOST=10.0.0.10 => IP da VM, caso esteja usando virtualização
 # HOST=localhost => caso esteja usando na sua proprima maquina local
-# HOST=.0.0.0.0 => caso esteja usando em um cotainer
+# HOST=0.0.0.0 => caso esteja usando em um cotainer
 HOST=localhost
 #
 # Defina o numero da porta a ser usada pela API.
