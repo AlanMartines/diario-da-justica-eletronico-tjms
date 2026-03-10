@@ -16,12 +16,10 @@ async function downloadPdfAndConvertToBase64(url) {
 	try {
 		const response = await axios.get(url, { 
 			responseType: 'arraybuffer',
-			timeout: 60000 // 60 segundos de timeout
+			timeout: 60000 
 		});
 		const buffer = Buffer.from(response.data, 'binary');
 		const base64Data = buffer.toString('base64');
-		
-		// Como sabemos que o TJMS sempre retorna PDF nessas rotas
 		const mimeType = 'application/pdf';
 		
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
@@ -48,12 +46,13 @@ async function obterValorDaTabela(page) {
 		return await page.evaluate(() => {
 			const tokenElement = document.querySelector('input[name="recaptcha_response_token"]');
 			const token = tokenElement ? tokenElement.innerText.trim() : '';
-			const tabela = document.querySelectorAll('tbody tr.fundocinza1');
+			const resultados = document.querySelectorAll('table.fundocinza1, tr.fundocinza1');
 			const res = [];
-			tabela.forEach((linha) => {
-				const titleElement = linha.querySelector('tr.ementaClass td');
-				const descElement = linha.querySelector('tr.ementaClass2 td');
-				const linkElement = linha.querySelector('a.layout');
+			
+			resultados.forEach((item) => {
+				const titleElement = item.querySelector('.ementaClass td, tr.ementaClass td');
+				const descElement = item.querySelector('.ementaClass2 td, tr.ementaClass2 td');
+				const linkElement = item.querySelector('a.layout');
 				
 				if (titleElement && descElement && linkElement) {
 					const title = titleElement.innerText.trim();
@@ -63,9 +62,14 @@ async function obterValorDaTabela(page) {
 					const match = onclick.match(padrao);
 					const linkRes = match && match[1];
 					
+					// Tentar extrair o número da página da descrição ou título
+					const pgMatch = description.match(/Página:\s*(\d+)/i) || title.match(/Página:\s*(\d+)/i);
+					const pagina = pgMatch ? parseInt(pgMatch[1]) : null;
+
 					res.push({
 						title: title,
 						description: description,
+						pagina: pagina,
 						link: `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkRes}&recaptcha_response_token=${token}`,
 						token: token,
 					});
@@ -79,6 +83,52 @@ async function obterValorDaTabela(page) {
 }
 
 module.exports = class Instance {
+	static async getMetadata() {
+		let browser;
+		let page;
+		try {
+			browser = await getBrowser();
+			page = await browser.newPage();
+			logger?.info(`- Coletando metadados do TJMS...`);
+			
+			await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do', { waitUntil: 'domcontentloaded' });
+			
+			const metadata = await page.evaluate(() => {
+				const extractOptions = (selectId) => {
+					const select = document.getElementById(selectId);
+					if (!select) return [];
+					return Array.from(select.options).map(opt => ({
+						valor: opt.value,
+						descricao: opt.text.trim()
+					})).filter(opt => opt.valor !== "");
+				};
+
+				return {
+					cadernos: extractOptions('cdCaderno'),
+					foros: extractOptions('cdForo'),
+					tiposPublicacao: extractOptions('cdTipoPublicacao')
+				};
+			});
+
+			await page.close();
+			return {
+				"erro": false,
+				"status": 200,
+				"message": "Metadados coletados com sucesso.",
+				"result": metadata
+			};
+		} catch (error) {
+			logger?.error(`- Erro ao coletar metadados: ${error.message}`);
+			if (page) await page.close();
+			return {
+				"erro": true,
+				"status": 500,
+				"message": "Erro ao coletar metadados do TJMS.",
+				"search": error.message
+			};
+		}
+	}
+
 	static async cadUnificado(dtInicio, nuDiarioCadUnificado) {
 		const url = `https://esaj.tjms.jus.br//cdje/downloadCaderno.do?dtDiario=${dtInicio}&nuEdicao=${nuDiarioCadUnificado}&cdCaderno=-1&tpDownload=V`;
 		try {
@@ -86,10 +136,7 @@ module.exports = class Instance {
 		} catch (error) {
 			logger?.error(`- Erro, ${error.message}`);
 			return {
-				"erro": true,
-				"status": 500,
-				"message": 'Erro, não foi possivel efetuar o download.',
-				"search": error?.message
+				"erro": true, "status": 500, "message": 'Erro, não foi possivel efetuar o download.', "search": error?.message
 			};
 		}
 	}
@@ -101,28 +148,23 @@ module.exports = class Instance {
 		} catch (error) {
 			logger?.error(`- Erro, ${error.message}`);
 			return {
-				"erro": true,
-				"status": 500,
-				"message": 'Erro, não foi possivel efetuar o download.',
-				"search": error?.message
+				"erro": true, "status": 500, "message": 'Erro, não foi possivel efetuar o download.', "search": error?.message
 			};
 		}
 	}
 
-	static async searchAdvanced(dtInicio, dtFim, cdCaderno, pesquisaLivre) {
+	static async searchAdvanced(dtInicio, dtFim, cdCaderno, pesquisaLivre, nuDiario = '', cdForo = '-1', cdTipoPublicacao = '-1') {
 		let browser;
 		let page;
 		try {
 			browser = await getBrowser();
 			page = await browser.newPage();
-			
-			// Aumentar o limite para lidar com conexões do exterior se necessário
 			page.setDefaultNavigationTimeout(120000);
 			
-			logger?.info(`- Navigating to TJMS...`);
-			await page.goto(`https://esaj.tjms.jus.br/cdje/consultaAvancada.do?dadosConsulta.dtInicio=${dtInicio}&dadosConsulta.dtFim=${dtFim}&dadosConsulta.cdCaderno=${cdCaderno}&dadosConsulta.pesquisaLivre=${encodeURIComponent(pesquisaLivre)}`, {
-				waitUntil: 'domcontentloaded'
-			});
+			const url = `https://esaj.tjms.jus.br/cdje/consultaAvancada.do?dadosConsulta.dtInicio=${dtInicio}&dadosConsulta.dtFim=${dtFim}&dadosConsulta.cdCaderno=${cdCaderno}&dadosConsulta.nuDiario=${nuDiario}&dadosConsulta.cdForo=${cdForo}&dadosConsulta.cdTipoPublicacao=${cdTipoPublicacao}&dadosConsulta.pesquisaLivre=${encodeURIComponent(pesquisaLivre)}`;
+			
+			logger?.info(`- Buscando no TJMS: ${pesquisaLivre}`);
+			await page.goto(url, { waitUntil: 'domcontentloaded' });
 			
 			await page.waitForSelector(".spwBotaoDefault, .ementaClass", { timeout: 60000 }).catch(() => {});
 			
@@ -134,15 +176,8 @@ module.exports = class Instance {
 					const strong = tabela ? tabela.querySelector('strong') : null;
 					return strong ? strong.innerText.trim() : "Nenhum resultado encontrado.";
 				});
-				
-				logger?.info(`- ${text}`);
 				await page.close();
-				return {
-					"erro": true,
-					"status": 404,
-					"message": text,
-					"search": null
-				};
+				return { "erro": true, "status": 404, "message": text, "search": null };
 			}
 
 			const valorPaginas = await page.evaluate(() => {
@@ -150,11 +185,8 @@ module.exports = class Instance {
 				const celula = tabela ? tabela.querySelector('td').innerText.trim() : "";
 				if (!celula) return null;
 				const resPg = celula.split(' ');
-				
 				return {
 					innerText: celula,
-					pgInicial: parseInt(resPg[1]),
-					pgFinal: parseInt(resPg[3]),
 					resTotal: parseInt(resPg[5]),
 					tPag: Math.ceil(resPg[5] / 10)
 				};
@@ -165,18 +197,13 @@ module.exports = class Instance {
 				return { "erro": true, "status": 404, "message": "Resultados não encontrados.", "search": null };
 			}
 
-			logger?.info(`- ${valorPaginas.innerText}`);
+			logger?.info(`- Total de resultados: ${valorPaginas.resTotal}`);
 			
 			let resultados = [];
-			
-			if (valorPaginas.resTotal >= 11) {
-				for (let i = 2; i <= valorPaginas.tPag; i++) {
-					const resTable = await obterValorDaTabela(page);
-					resultados = resultados.concat(resTable);
-					
+			for (let i = 1; i <= valorPaginas.tPag; i++) {
+				if (i > 1) {
 					const linkElement = await page.$(`a[onclick="trocaDePg(${i});"]`);
 					if (linkElement) {
-						logger?.info(`- Clique na função trocaDePg ${i} realizado com sucesso`);
 						await Promise.all([
 							linkElement.click(),
 							page.waitForNavigation({ waitUntil: 'networkidle0' }).catch(() => {})
@@ -186,29 +213,22 @@ module.exports = class Instance {
 						break;
 					}
 				}
-				const lastPageResults = await obterValorDaTabela(page);
-				resultados = resultados.concat(lastPageResults);
-			} else {
-				resultados = await obterValorDaTabela(page);
+				const resTable = await obterValorDaTabela(page);
+				resultados = resultados.concat(resTable);
+				
+				// Limite de segurança para evitar loops infinitos em buscas muito grandes
+				if (resultados.length >= 500) {
+					logger?.warn("- Limite de 500 resultados atingido para uma única busca.");
+					break;
+				}
 			}
 
 			await page.close();
-			
-			return {
-				"erro": false,
-				"status": 200,
-				"message": 'Pesquisa efetuada com sucesso.',
-				"search": resultados
-			};
+			return { "erro": false, "status": 200, "message": 'Pesquisa efetuada com sucesso.', "search": resultados };
 		} catch (error) {
 			logger?.error(`- Erro, ${error.message}`);
 			if (page) await page.close();
-			return {
-				"erro": true,
-				"status": 500,
-				"message": 'Erro, não foi possivel efetuar a pesquisa.',
-				"search": error?.message
-			};
+			return { "erro": true, "status": 500, "message": 'Erro interno na pesquisa.', "search": error?.message };
 		}
 	}
 }
