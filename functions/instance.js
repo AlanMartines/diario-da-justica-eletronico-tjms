@@ -177,20 +177,38 @@ module.exports = class Instance {
 			let resultados = [];
 			for (let i = 1; i <= valorPaginas.tPag; i++) {
 				if (i > 1) {
-					try {
-						const link = await page.$(`a[onclick="trocaDePg(${i});"]`);
-						if (link) {
-							await Promise.all([
-								link.click(),
-								page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {})
-							]);
-							await new Promise(r => setTimeout(r, 2000));
-						} else break;
-					} catch (e) {
-						logger?.error(`- Erro ao mudar para página ${i}: ${e.message}`);
-						break;
+					let retryPage = 0;
+					let success = false;
+					while (retryPage < 3 && !success) {
+						try {
+							const link = await page.$(`a[onclick="trocaDePg(${i});"]`);
+							if (link) {
+								await Promise.all([
+									link.click(),
+									page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {})
+								]);
+								// Aguarda um pouco mais para a estabilização do DOM após a troca
+								await new Promise(r => setTimeout(r, 2500));
+								success = true;
+							} else {
+								logger?.warn(`- Link da página ${i} não encontrado na tentativa ${retryPage + 1}.`);
+								retryPage++;
+								await new Promise(r => setTimeout(r, 1000));
+							}
+						} catch (e) {
+							if (e.message.includes('detached')) {
+								logger?.warn(`- Frame destacado na página ${i}, tentando recuperar contexto...`);
+								retryPage++;
+								await new Promise(r => setTimeout(r, 1500));
+								continue;
+							}
+							logger?.error(`- Erro fatal ao mudar para página ${i}: ${e.message}`);
+							break;
+						}
 					}
+					if (!success) break;
 				}
+				
 				const itens = await obterValorDaTabela(page, dtFim);
 				resultados = resultados.concat(itens);
 				if (resultados.length >= 500) break;
