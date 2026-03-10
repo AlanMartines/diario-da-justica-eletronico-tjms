@@ -8,7 +8,4 @@ config.DOMAIN_SSL = process.env.DOMAIN_SSL || '';
 config.SECRET_KEY = process.env.SECRET_KEY || null;
 config.CHROME_BIN = process.env.CHROME_BIN || undefined;
 config.WSENDPOINT = process.env.WSENDPOINT || undefined;
-
-// Configurações de Proxy
-config.USE_PROXY = process.env.USE_PROXY === 'true';
-config.PROXY_LIST = process.env.PROXY_LIST ? process.env.PROXY_LIST.split(',') : [];
+//

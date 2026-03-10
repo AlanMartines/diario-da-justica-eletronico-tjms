@@ -12,12 +12,6 @@ const auth = require("../middleware/auth");
 // Aplicar autenticação a todas as rotas neste roteador
 router.use(auth);
 
-// Checar IP (Depuração)
-router.get("/checkIP", async (req, res) => {
-	const check = await instance.checkIP();
-	return res.status(check.status).json(check);
-});
-
 // Caderno unificado
 router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next) => {
 	//
