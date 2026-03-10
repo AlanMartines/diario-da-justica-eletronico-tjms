@@ -39,17 +39,37 @@ async function downloadPdfAndConvertToBase64(url) {
 async function obterValorDaTabela(page, dtDiario = '') {
 	if (!page) return [];
 	try {
-		return await page.evaluate((dt) => {
-			// Corrigido: Para inputs, deve-se usar .value
-			const tokenElement = document.querySelector('input[name="recaptcha_response_token"]');
-			const token = tokenElement ? tokenElement.value : ''; 
+		// Garante que o token está carregado antes de extrair
+		await page.waitForFunction(() => {
+			const el = document.querySelector('input[name="recaptcha_response_token"]');
+			return el && el.value && el.value.length > 10;
+		}, { timeout: 5000 }).catch(() => logger?.warn("- Timeout aguardando token ReCAPTCHA."));
 
+		return await page.evaluate((dt) => {
+			// Busca abrangente pelo token
+			const getToken = () => {
+				const selectors = [
+					'input[name="recaptcha_response_token"]',
+					'#recaptcha_response_token',
+					'input[id*="recaptcha"]',
+					'input[name*="recaptcha"]'
+				];
+				for (const s of selectors) {
+					const el = document.querySelector(s);
+					if (el && el.value) return el.value;
+				}
+				return '';
+			};
+
+			const token = getToken();
 			const resultados = document.querySelectorAll('table.fundocinza1, tr.fundocinza1');
 			const res = [];
+			
 			resultados.forEach((item) => {
 				const titleElement = item.querySelector('.ementaClass td, tr.ementaClass td');
 				const descElement = item.querySelector('.ementaClass2 td, tr.ementaClass2 td');
 				const linkElement = item.querySelector('a.layout');
+				
 				if (titleElement && descElement && linkElement) {
 					const title = titleElement.innerText.trim();
 					const description = descElement.innerText.trim();
@@ -58,8 +78,6 @@ async function obterValorDaTabela(page, dtDiario = '') {
 					const linkParams = match && match[1];
 
 					const pgMatch = description.match(/Página:\s*(\d+)/i) || title.match(/Página:\s*(\d+)/i);
-
-					// Construção do link com token e data
 					const finalLink = `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkParams}&dtDiario=${dt}&recaptcha_response_token=${token}`;
 
 					res.push({
@@ -77,7 +95,6 @@ async function obterValorDaTabela(page, dtDiario = '') {
 		return [];
 	}
 }
-
 
 module.exports = class Instance {
 	static async getMetadata() {
@@ -123,7 +140,6 @@ module.exports = class Instance {
 			
 			logger?.info(`- Navegando para consulta...`);
 			
-			// Técnica de navegação resiliente: ignora erros de detachment durante o goto inicial
 			try {
 				await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 			} catch (e) {
@@ -131,7 +147,6 @@ module.exports = class Instance {
 				logger?.warn("- Frame detached durante o goto, aguardando estabilização...");
 			}
 
-			// Aguarda o seletor principal aparecer. Se der detached aqui, tentamos recuperar a referência.
 			let retrySelector = 0;
 			while(retrySelector < 3) {
 				try {
@@ -161,7 +176,6 @@ module.exports = class Instance {
 				const tabela = document.querySelector('#divResultadosSuperior table td');
 				if (!tabela) return null;
 				const resPg = tabela.innerText.trim().split(/\s+/);
-				// Formato: "Exibindo 1 a 10 de 50 resultados" -> [5] é o total
 				const totalIdx = resPg.indexOf('de') + 1;
 				const total = parseInt(resPg[totalIdx]);
 				return { resTotal: total, tPag: Math.ceil(total / 10) };
@@ -187,22 +201,18 @@ module.exports = class Instance {
 									link.click(),
 									page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {})
 								]);
-								// Aguarda um pouco mais para a estabilização do DOM após a troca
 								await new Promise(r => setTimeout(r, 2500));
 								success = true;
 							} else {
-								logger?.warn(`- Link da página ${i} não encontrado na tentativa ${retryPage + 1}.`);
 								retryPage++;
 								await new Promise(r => setTimeout(r, 1000));
 							}
 						} catch (e) {
 							if (e.message.includes('detached')) {
-								logger?.warn(`- Frame destacado na página ${i}, tentando recuperar contexto...`);
 								retryPage++;
 								await new Promise(r => setTimeout(r, 1500));
 								continue;
 							}
-							logger?.error(`- Erro fatal ao mudar para página ${i}: ${e.message}`);
 							break;
 						}
 					}
