@@ -22,7 +22,7 @@ async function downloadPdfAndConvertToBase64(url) {
 		});
 		const buffer = Buffer.from(response.data, 'binary');
 		const base64Data = buffer.toString('base64');
-		const fileInfo = await fileType.fromBuffer(buffer);
+		const fileInfo = await fileType(buffer);
 		const mimeType = fileInfo?.mime || 'application/pdf';
 
 		logger?.info(`- PDF baixado e convertido para base64 com sucesso`);
