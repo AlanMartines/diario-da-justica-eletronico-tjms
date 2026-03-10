@@ -36,12 +36,14 @@ async function downloadPdfAndConvertToBase64(url) {
 	}
 }
 
-async function obterValorDaTabela(page) {
+async function obterValorDaTabela(page, dtDiario = '') {
 	if (!page) return [];
 	try {
-		return await page.evaluate(() => {
+		return await page.evaluate((dt) => {
+			// Corrigido: Para inputs, deve-se usar .value
 			const tokenElement = document.querySelector('input[name="recaptcha_response_token"]');
-			const token = tokenElement ? tokenElement.innerText.trim() : '';
+			const token = tokenElement ? tokenElement.value : ''; 
+
 			const resultados = document.querySelectorAll('table.fundocinza1, tr.fundocinza1');
 			const res = [];
 			resultados.forEach((item) => {
@@ -53,21 +55,29 @@ async function obterValorDaTabela(page) {
 					const description = descElement.innerText.trim();
 					const onclick = linkElement.getAttribute('onclick');
 					const match = onclick.match(/'([^']+)'/);
-					const linkRes = match && match[1];
+					const linkParams = match && match[1];
+
 					const pgMatch = description.match(/Página:\s*(\d+)/i) || title.match(/Página:\s*(\d+)/i);
+
+					// Construção do link com token e data
+					const finalLink = `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkParams}&dtDiario=${dt}&recaptcha_response_token=${token}`;
+
 					res.push({
 						title: title,
 						description: description,
 						pagina: pgMatch ? parseInt(pgMatch[1]) : null,
-						link: `https://esaj.tjms.jus.br/cdje/consultaSimples.do?${linkRes}&recaptcha_response_token=${token}`,
+						link: finalLink,
 						token: token,
 					});
 				}
 			});
 			return res;
-		});
-	} catch (e) { return []; }
+		}, dtDiario);
+	} catch (e) {
+		return [];
+	}
 }
+
 
 module.exports = class Instance {
 	static async getMetadata() {
@@ -181,7 +191,7 @@ module.exports = class Instance {
 						break;
 					}
 				}
-				const itens = await obterValorDaTabela(page);
+				const itens = await obterValorDaTabela(page, dtFim);
 				resultados = resultados.concat(itens);
 				if (resultados.length >= 500) break;
 			}
