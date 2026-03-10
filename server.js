@@ -135,7 +135,7 @@ SECRET_KEY=096e402586e2faa8db20d6b033c60
 				res.sendFile(path.join(__dirname, './views/index.html'));
 			});
 			//
-			app.use("/instance", instance);
+			app.use("/", instance);
 			//
 			// rota url erro
 			app.all('*', (req, res) => {

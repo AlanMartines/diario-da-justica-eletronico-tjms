@@ -22,78 +22,64 @@ router.get("/metadata", async (req, res) => {
 router.post("/cadUnificado", verify.nuDiarioCadUnificado, async (req, res, next) => {
 	try {
 		if (!req?.body?.dtDiario || !req?.body?.nuDiarioCadUnificado) {
-			const resultRes = {
-				"erro": true,
-				"status": 400,
-				"message": 'Todos os valores deverem ser preenchidos, verifique e tente novamente.'
-			};
-			res.setHeader('Content-Type', 'application/json');
-			return res.status(resultRes.status).json({ "result": resultRes });
+			const resultRes = { "erro": true, "status": 400, "message": 'dtDiario e nuDiarioCadUnificado são obrigatórios.' };
+			return res.status(400).json({ "result": resultRes });
 		} 
 		const cadUnificado = await instance.cadUnificado(req?.body?.dtDiario, req?.body?.nuDiarioCadUnificado);
-		res.setHeader('Content-Type', 'application/json');
 		return res.status(cadUnificado.status).json({ "result": cadUnificado });
 	} catch (error) {
 		logger?.error(error);
-		const resultRes = { "erro": true, "status": 500, "message": 'Erro ao processar caderno unificado.' };
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(resultRes.status).json({ "result": resultRes });
+		return res.status(500).json({ "result": { "erro": true, "status": 500, "message": 'Erro ao processar.' } });
 	}
-}); //Caderno unificado
+});
 
 // Consulta dos cadernos
 router.post("/downloadCad", async (req, res, next) => {
 	try {
 		if (!req?.body?.dtDiario || !req?.body?.cdCaderno) {
 			const resultRes = { "erro": true, "status": 400, "message": 'Data e código do caderno são obrigatórios.' };
-			res.setHeader('Content-Type', 'application/json');
-			return res.status(resultRes.status).json({ "result": resultRes });
+			return res.status(400).json({ "result": resultRes });
 		} 
 		const downloadCad = await instance.downloadCad(req?.body?.dtDiario, req?.body?.cdCaderno);
-		res.setHeader('Content-Type', 'application/json');
 		return res.status(downloadCad.status).json({ "result": downloadCad });
 	} catch (error) {
 		logger?.error(error);
-		const resultRes = { "erro": true, "status": 500, "message": 'Erro ao baixar caderno.' };
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(resultRes.status).json({ "result": resultRes });
+		return res.status(500).json({ "result": { "erro": true, "status": 500, "message": 'Erro ao baixar.' } });
 	}
-}); //Consulta dos cadernos
+});
 
-// Pesquisa avançada
+// Pesquisa avançada (Síncrona)
 router.post("/searchAdvanced", async (req, res, next) => {
 	try {
 		const { dtInicio, dtFim, cdCaderno, pesquisaLivre, nuDiario, cdForo, cdTipoPublicacao } = req.body;
-		
 		if (!dtInicio || !dtFim || !cdCaderno || !pesquisaLivre) {
-			const resultRes = {
-				"erro": true,
-				"status": 400,
-				"message": 'dtInicio, dtFim, cdCaderno e pesquisaLivre são obrigatórios.'
-			};
-			res.setHeader('Content-Type', 'application/json');
-			return res.status(resultRes.status).json({ "result": resultRes });
+			return res.status(400).json({ "result": { "erro": true, "status": 400, "message": 'dtInicio, dtFim, cdCaderno e pesquisaLivre são obrigatórios.' } });
 		} 
-		
-		const searchAdvanced = await instance.searchAdvanced(
-			dtInicio, dtFim, cdCaderno, pesquisaLivre, nuDiario, cdForo, cdTipoPublicacao
-		);
-		
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(searchAdvanced.status).json({ "result": searchAdvanced });
+		const result = await instance.searchAdvanced(dtInicio, dtFim, cdCaderno, pesquisaLivre, nuDiario, cdForo, cdTipoPublicacao);
+		return res.status(result.status).json({ "result": result });
 	} catch (error) {
 		logger?.error(error);
-		const resultRes = { "erro": true, "status": 500, "message": 'Erro ao realizar pesquisa avançada.' };
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(resultRes.status).json({ "result": resultRes });
+		return res.status(500).json({ "result": { "erro": true, "status": 500, "message": 'Erro na pesquisa.' } });
 	}
-}); //Pesquisa avançada
+});
 
-// Rota para erro 404
+// Pesquisa avançada (Assíncrona com Webhook)
+router.post("/searchAsync", async (req, res, next) => {
+	try {
+		const { webhookUrl, dtInicio, dtFim, cdCaderno, pesquisaLivre, nuDiario, cdForo, cdTipoPublicacao } = req.body;
+		if (!webhookUrl || !dtInicio || !dtFim || !cdCaderno || !pesquisaLivre) {
+			return res.status(400).json({ "result": { "erro": true, "status": 400, "message": 'webhookUrl e demais campos de busca são obrigatórios.' } });
+		} 
+		const result = await instance.searchAsync(webhookUrl, dtInicio, dtFim, cdCaderno, pesquisaLivre, nuDiario, cdForo, cdTipoPublicacao);
+		return res.status(result.status).json({ "result": result });
+	} catch (error) {
+		logger?.error(error);
+		return res.status(500).json({ "result": { "erro": true, "status": 500, "message": 'Erro ao iniciar busca assíncrona.' } });
+	}
+});
+
 router.all('*', (req, res) => {
-	const resultRes = { "erro": true, "status": 404, "message": 'Url informada não encontrada.' };
-	res.setHeader('Content-Type', 'application/json');
-	res.status(resultRes.status).json({ "result": resultRes });
+	res.status(404).json({ "result": { "erro": true, "status": 404, "message": 'Url informada não encontrada.' } });
 });
 
 module.exports = router;

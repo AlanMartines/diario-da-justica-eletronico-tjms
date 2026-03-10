@@ -9,7 +9,7 @@
 			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
 			"modified": 1710000000000,
 			"created": 1710000000000,
-			"url": "{{ _.Localhost }}/instance/metadata",
+			"url": "{{ _.Localhost }}/metadata",
 			"name": "Metadados (Foros e Tipos)",
 			"description": "Retorna listas de Foros, Cadernos e Tipos de Publicação oficiais do TJMS.",
 			"method": "GET",
@@ -37,7 +37,7 @@
 			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
 			"modified": 1710000000000,
 			"created": 1684689999156,
-			"url": "{{ _.Localhost }}/instance/cadUnificado",
+			"url": "{{ _.Localhost }}/cadUnificado",
 			"name": "Caderno unificado",
 			"description": "",
 			"method": "POST",
@@ -82,7 +82,7 @@
 			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
 			"modified": 1710000000000,
 			"created": 1684714789844,
-			"url": "{{ _.Localhost }}/instance/downloadCad",
+			"url": "{{ _.Localhost }}/downloadCad",
 			"name": "Download dos cadernos",
 			"description": "",
 			"method": "POST",
@@ -117,8 +117,8 @@
 			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
 			"modified": 1710000000000,
 			"created": 1684689601348,
-			"url": "{{ _.Localhost }}/instance/searchAdvanced",
-			"name": "Pesquisa avançada",
+			"url": "{{ _.Localhost }}/searchAdvanced",
+			"name": "Pesquisa avançada (Síncrona)",
 			"description": "",
 			"method": "POST",
 			"body": {
@@ -138,6 +138,41 @@
 			],
 			"authentication": {},
 			"metaSortKey": -1683492424346.5,
+			"isPrivate": false,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingRebuildPath": true,
+			"settingFollowRedirects": "global",
+			"_type": "request"
+		},
+		{
+			"_id": "req_searchAsync",
+			"parentId": "wrk_51a5709b21294c278d4aad0cdbb5f76d",
+			"modified": 1710000000000,
+			"created": 1710000000000,
+			"url": "{{ _.Localhost }}/searchAsync",
+			"name": "Pesquisa avançada (Assíncrona)",
+			"description": "Inicia uma busca e envia o resultado para o Webhook informado.",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"webhookUrl\": \"https://sua-url-aqui.com/webhook\",\n\t\"dtInicio\": \"01/01/2024\",\n\t\"dtFim\": \"10/01/2024\",\n\t\"cdCaderno\": \"-11\",\n\t\"pesquisaLivre\": \"\\\"Palavra chave aqui\\\"\",\n\t\"nuDiario\": \"\",\n\t\"cdForo\": \"-1\",\n\t\"cdTipoPublicacao\": \"-1\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				},
+				{
+					"name": "Authorization",
+					"value": "Bearer {{ _.SECRET_KEY }}"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1683492424300.5,
 			"isPrivate": false,
 			"settingStoreCookies": true,
 			"settingSendCookies": true,
