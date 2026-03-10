@@ -54,7 +54,7 @@ Realiza a busca e retorna os resultados na mesma conexão.
   "dtInicio": "01/01/2024",
   "dtFim": "10/01/2024",
   "cdCaderno": "-11",
-  "pesquisaLivre": "\"Alex Martines\"",
+  "pesquisaLivre": "\"NOME DA PARTE\"",
   "nuDiario": "",
   "cdForo": "-1",
   "cdTipoPublicacao": "-1"

@@ -1,6 +1,6 @@
 FROM node:18.14-slim
 
-LABEL version="1.0.0" description="ApiBaileysMd" maintainer="Alan Martines<alancpmartines@hotmail.com>"
+LABEL version="2.0.0" description="ApiDiarioTjms" maintainer="Developer <developer@email.com>"
 
 RUN mkdir -p /home/ApiTJMS
 
