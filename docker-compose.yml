@@ -6,7 +6,7 @@ services:
     container_name: ${HOST_NAME:-'ApiTJMS'}
     hostname: ${HOST_NAME:-'ApiTJMS'}
     network_mode: bridge
-    image: developer/api-node-tjms:${TAG}
+    image: alanmartines/api-node-tjms:${TAG}
     build:
       context: .
       dockerfile: Dockerfile.backend

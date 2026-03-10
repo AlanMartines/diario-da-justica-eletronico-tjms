@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/developer/diario-da-justica-eletronico-tjms.git"
+    "url": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms.git"
   },
   "keywords": [
     "Diário",
@@ -18,12 +18,12 @@
     "Justiça",
     "Eletrônico"
   ],
-  "author": "Software Developer <developer@email.com>",
+  "author": "Alan Martines <alancpmartines@hotmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/developer/diario-da-justica-eletronico-tjms/issues"
+    "url": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms/issues"
   },
-  "homepage": "https://github.com/developer/diario-da-justica-eletronico-tjms#readme",
+  "homepage": "https://github.com/AlanMartines/diario-da-justica-eletronico-tjms#readme",
   "dependencies": {
     "axios": "^1.4.0",
     "body-parser": "^2.2.2",

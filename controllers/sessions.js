@@ -65,7 +65,7 @@ module.exports = class Sessions {
     console.log(boxen(newVersionLog, { padding: 1 }));
     console.log(
       `Para mais informações visite: ${chalk.underline(
-        'https://github.com/developer/diario-da-justica-eletronico-tjms/releases'
+        'https://github.com/AlanMartines/diario-da-justica-eletronico-tjms/releases'
       )}\n`
     );
   }
