@@ -8,43 +8,30 @@ let lockBrowser = false;
 
 async function getBrowser() {
 	while (lockBrowser) { await new Promise(r => setTimeout(r, 100)); }
-	
 	if (!browserInstance || !browserInstance.isConnected()) {
 		lockBrowser = true;
 		try {
-			if (browserInstance) {
-				try { await browserInstance.close(); } catch (e) {}
-			}
-			logger?.info("- Criando nova instância do navegador para estabilidade...");
+			if (browserInstance) { try { await browserInstance.close(); } catch (e) {} }
+			logger?.info("- Iniciando nova instância do navegador...");
 			browserInstance = await browserObject.startBrowser();
-		} finally {
-			lockBrowser = false;
-		}
+		} finally { lockBrowser = false; }
 	}
 	return browserInstance;
 }
 
 async function safelyClosePage(page) {
 	if (!page) return;
-	try {
-		await page.close();
-	} catch (err) {
-		// Silencioso se já estiver fechado
-	}
+	try { await page.close(); } catch (err) {}
 }
 
 async function downloadPdfAndConvertToBase64(url) {
 	try {
 		const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 60000 });
-		const buffer = Buffer.from(response.data, 'binary');
 		return {
-			"erro": false,
-			"status": 200,
-			"message": 'PDF baixado com sucesso',
-			"result": { data: buffer.toString('base64'), mimetype: 'application/pdf' }
+			"erro": false, "status": 200, "message": 'Sucesso',
+			"result": { data: Buffer.from(response.data, 'binary').toString('base64'), mimetype: 'application/pdf' }
 		};
 	} catch (error) {
-		logger?.error(`- Erro download PDF: ${error.message}`);
 		return { "erro": true, "status": 500, "message": 'Erro no download.' };
 	}
 }
@@ -79,9 +66,7 @@ async function obterValorDaTabela(page) {
 			});
 			return res;
 		});
-	} catch (e) {
-		return [];
-	}
+	} catch (e) { return []; }
 }
 
 module.exports = class Instance {
@@ -90,45 +75,20 @@ module.exports = class Instance {
 		try {
 			const browser = await getBrowser();
 			page = await browser.newPage();
-			
-			// Tenta navegar. Se falhar por 'detached', tenta mais uma vez.
-			let retry = 0;
-			while (retry < 2) {
-				try {
-					await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do', { 
-						waitUntil: 'load', 
-						timeout: 45000 
-					});
-					break;
-				} catch (e) {
-					if (e.message.includes('detached') && retry === 0) {
-						retry++;
-						logger?.warn("- Frame detached, tentando novamente...");
-						continue;
-					}
-					throw e;
-				}
-			}
-
-			await page.waitForSelector('select[name="dadosConsulta.cdCaderno"]', { timeout: 15000 }).catch(() => {});
-
+			await page.goto('https://esaj.tjms.jus.br/cdje/consultaAvancada.do', { waitUntil: 'networkidle2', timeout: 60000 });
 			const metadata = await page.evaluate(() => {
 				const extractOptions = (name) => {
 					const select = document.querySelector(`select[name="${name}"], select[name="dadosConsulta.${name}"]`);
 					if (!select) return [];
-					return Array.from(select.options)
-						.filter(opt => opt.value && opt.value !== "-1")
-						.map(opt => ({ valor: opt.value, descricao: opt.text.trim() }));
+					return Array.from(select.options).filter(opt => opt.value && opt.value !== "-1").map(opt => ({ valor: opt.value, descricao: opt.text.trim() }));
 				};
 				return { cadernos: extractOptions('cdCaderno'), foros: extractOptions('cdForo'), tiposPublicacao: extractOptions('cdTipoPublicacao') };
 			});
-
 			await safelyClosePage(page);
-			return { "erro": false, "status": 200, "message": "Metadados coletados.", "result": metadata };
+			return { "erro": false, "status": 200, "message": "Sucesso", "result": metadata };
 		} catch (error) {
-			logger?.error(`- Erro Metadata: ${error.message}`);
 			await safelyClosePage(page);
-			return { "erro": true, "status": 500, "message": "Erro ao coletar metadados." };
+			return { "erro": true, "status": 500, "message": "Erro nos metadados." };
 		}
 	}
 
@@ -151,15 +111,37 @@ module.exports = class Instance {
 			
 			const url = `https://esaj.tjms.jus.br/cdje/consultaAvancada.do?dadosConsulta.dtInicio=${dtInicio}&dadosConsulta.dtFim=${dtFim}&dadosConsulta.cdCaderno=${cdCaderno}&dadosConsulta.nuDiario=${nuDiario}&dadosConsulta.cdForo=${cdForo}&dadosConsulta.cdTipoPublicacao=${cdTipoPublicacao}&dadosConsulta.pesquisaLivre=${encodeURIComponent(pesquisaLivre)}`;
 			
-			logger?.info(`- Buscando: ${pesquisaLivre}`);
-			await page.goto(url, { waitUntil: 'domcontentloaded' });
-			await page.waitForSelector(".spwBotaoDefault, .ementaClass", { timeout: 45000 }).catch(() => {});
+			logger?.info(`- Navegando para consulta...`);
+			
+			// Técnica de navegação resiliente: ignora erros de detachment durante o goto inicial
+			try {
+				await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+			} catch (e) {
+				if (!e.message.includes('detached')) throw e;
+				logger?.warn("- Frame detached durante o goto, aguardando estabilização...");
+			}
+
+			// Aguarda o seletor principal aparecer. Se der detached aqui, tentamos recuperar a referência.
+			let retrySelector = 0;
+			while(retrySelector < 3) {
+				try {
+					await page.waitForSelector(".spwBotaoDefault, .ementaClass", { timeout: 30000 });
+					break;
+				} catch (e) {
+					if (e.message.includes('detached')) {
+						retrySelector++;
+						await new Promise(r => setTimeout(r, 1000));
+						continue;
+					}
+					throw e;
+				}
+			}
 			
 			const divResultadosSuperiorHandle = await page.$('#divResultadosSuperior');
 			if (!divResultadosSuperiorHandle) {
 				const text = await page.evaluate(() => {
 					const el = document.querySelector('div.ementaClass strong');
-					return el ? el.innerText.trim() : "Nenhum resultado.";
+					return el ? el.innerText.trim() : "Nenhum resultado encontrado.";
 				});
 				await safelyClosePage(page);
 				return { "erro": true, "status": 404, "message": text, "search": null };
@@ -168,35 +150,48 @@ module.exports = class Instance {
 			const valorPaginas = await page.evaluate(() => {
 				const tabela = document.querySelector('#divResultadosSuperior table td');
 				if (!tabela) return null;
-				const resPg = tabela.innerText.trim().split(' ');
-				return { resTotal: parseInt(resPg[5]), tPag: Math.ceil(resPg[5] / 10) };
+				const resPg = tabela.innerText.trim().split(/\s+/);
+				// Formato: "Exibindo 1 a 10 de 50 resultados" -> [5] é o total
+				const totalIdx = resPg.indexOf('de') + 1;
+				const total = parseInt(resPg[totalIdx]);
+				return { resTotal: total, tPag: Math.ceil(total / 10) };
 			});
 
 			if (!valorPaginas) {
 				await safelyClosePage(page);
-				return { "erro": true, "status": 404, "message": "Sem resultados.", "search": null };
+				return { "erro": true, "status": 404, "message": "Resultados não processados.", "search": null };
 			}
 
-			logger?.info(`- Resultados: ${valorPaginas.resTotal}`);
+			logger?.info(`- Total: ${valorPaginas.resTotal} resultados em ${valorPaginas.tPag} páginas.`);
+			
 			let resultados = [];
 			for (let i = 1; i <= valorPaginas.tPag; i++) {
 				if (i > 1) {
-					const link = await page.$(`a[onclick="trocaDePg(${i});"]`);
-					if (link) {
-						await Promise.all([link.click(), page.waitForNavigation({ waitUntil: 'domcontentloaded' }).catch(() => {})]);
-						await new Promise(r => setTimeout(r, 1500));
-					} else break;
+					try {
+						const link = await page.$(`a[onclick="trocaDePg(${i});"]`);
+						if (link) {
+							await Promise.all([
+								link.click(),
+								page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {})
+							]);
+							await new Promise(r => setTimeout(r, 2000));
+						} else break;
+					} catch (e) {
+						logger?.error(`- Erro ao mudar para página ${i}: ${e.message}`);
+						break;
+					}
 				}
-				resultados = resultados.concat(await obterValorDaTabela(page));
+				const itens = await obterValorDaTabela(page);
+				resultados = resultados.concat(itens);
 				if (resultados.length >= 500) break;
 			}
 
 			await safelyClosePage(page);
 			return { "erro": false, "status": 200, "message": 'Sucesso.', "search": resultados };
 		} catch (error) {
-			logger?.error(`- Erro Search: ${error.message}`);
+			logger?.error(`- Falha Crítica: ${error.message}`);
 			await safelyClosePage(page);
-			return { "erro": true, "status": 500, "message": 'Erro interno.' };
+			return { "erro": true, "status": 500, "message": 'Erro na pesquisa.', "search": error.message };
 		}
 	}
 }
